@@ -3,10 +3,12 @@ DEFS =
 CFLAGS += -ggdb3 -W -Wall -Wextra $(INCS) $(DEFS)
 CXXFLAGS = $(CFLAGS) -std=c++0x
 LIBS = -lpthread -lboost_program_options -lboost_system
-PROG = ncli
+PROG = nrel
 
 SOURCES = main.cpp \
+	  relay.cpp \
 	  client.cpp \
+	  server.cpp \
 	  settings.cpp \
 	  logger.cpp \
 	  log_writer.cpp \
