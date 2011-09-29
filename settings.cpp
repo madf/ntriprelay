@@ -20,20 +20,54 @@ void SettingsParser::init(int argc, char * argv[])
         _settings._isDebug = true;
     }
 
-    if (vm.count("server")) {
-        _settings._server = vm["server"].as<std::string>();
+    if (vm.count("src-server")) {
+        _settings._sourceServer = vm["src-server"].as<std::string>();
     }
 
-    if (vm.count("mountpoint")) {
-        _settings._mountpoint = vm["mountpoint"].as<std::string>();
+    if (vm.count("src-mountpoint")) {
+        _settings._sourceMountpoint = vm["src-mountpoint"].as<std::string>();
     }
 
-    if (vm.count("login")) {
-        _settings._login = vm["login"].as<std::string>();
+    if (vm.count("src-login")) {
+        _settings._sourceLogin = vm["src-login"].as<std::string>();
     }
 
-    if (vm.count("password")) {
-        _settings._password = vm["password"].as<std::string>();
+    if (vm.count("src-password")) {
+        _settings._sourcePassword = vm["src-password"].as<std::string>();
+    }
+
+    if (vm.count("src-port")) {
+        try {
+            _settings._sourcePort = vm["src-port"].as<uint16_t>();
+        }
+        catch (boost::bad_lexical_cast &) {
+            throw CasterError("Invalid source port value");
+        }
+    }
+
+    if (vm.count("dst-server")) {
+        _settings._destinationServer = vm["dst-server"].as<std::string>();
+    }
+
+    if (vm.count("dst-mountpoint")) {
+        _settings._destinationMountpoint = vm["dst-mountpoint"].as<std::string>();
+    }
+
+    if (vm.count("dst-login")) {
+        _settings._destinationLogin = vm["dst-login"].as<std::string>();
+    }
+
+    if (vm.count("dst-password")) {
+        _settings._destinationPassword = vm["dst-password"].as<std::string>();
+    }
+
+    if (vm.count("dst-port")) {
+        try {
+            _settings._destinationPort = vm["dst-port"].as<uint16_t>();
+        }
+        catch (boost::bad_lexical_cast &) {
+            throw CasterError("Invalid destination port value");
+        }
     }
 
     if (vm.count("verbosity")) {
@@ -51,14 +85,5 @@ void SettingsParser::init(int argc, char * argv[])
 
     if (vm.count("gga")) {
         _settings._gga = vm["gga"].as<std::string>();
-    }
-
-    if (vm.count("port")) {
-        try {
-            _settings._port = boost::lexical_cast<uint16_t>(vm["port"].as<std::string>());
-        }
-        catch (boost::bad_lexical_cast &) {
-            throw CasterError("Invalid port value");
-        }
     }
 }
