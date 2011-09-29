@@ -10,7 +10,7 @@
 #include "settings.h"
 #include "version.h"
 #include "error.h"
-#include "client.h"
+#include "relay.h"
 
 #define ERRLOG(level) LOG(CerrWriter, level)
 
@@ -18,8 +18,6 @@ using namespace MADF;
 using namespace Caster;
 
 void configureLogger(const SettingsParser & parser);
-void printData(const boost::array<char, 1024> & data,
-               size_t amount);
 void printError(const boost::system::error_code & code);
 
 int main(int argc, char * argv[])
@@ -45,12 +43,17 @@ int main(int argc, char * argv[])
     }
 
     if (sParser.settings().isVersion()) {
-        std::cout << "Boost NTRIP Client " << version << " (revision: " << revision << ")" << std::endl;
+        std::cout << "Boost NTRIP Relay " << version << " (revision: " << revision << ")" << std::endl;
         return 0;
     }
 
-    if (sParser.settings().server().empty()) {
-        std::cerr << "You must specify at least server location" << std::endl;
+    if (sParser.settings().sourceServer().empty()) {
+        std::cerr << "You must specify source server location" << std::endl;
+        return -1;
+    }
+
+    if (sParser.settings().destinationServer().empty()) {
+        std::cerr << "You must specify source server location" << std::endl;
         return -1;
     }
 
@@ -58,49 +61,58 @@ int main(int argc, char * argv[])
 
     if (sParser.settings().isDebug()) {
         std::cout << "Settings dump:\n"
-                  << "\t- help: " << (sParser.settings().isHelp() ? "yes" : "no") << "\n"
-                  << "\t- version: " << (sParser.settings().isVersion() ? "yes" : "no") << "\n"
+                  << "\t- connection timeout: " << sParser.settings().connectionTimeout() << "\n"
                   << "\t- debug: " << (sParser.settings().isDebug() ? "yes" : "no") << "\n"
-                  << "\t- server: " << sParser.settings().server() << "\n"
-                  << "\t- mountpoint: " << sParser.settings().mountpoint() << "\n"
-                  << "\t- login: " << sParser.settings().login() << "\n"
-                  << "\t- password: " << sParser.settings().password() << "\n"
+                  << "\t- destination login: " << sParser.settings().destinationLogin() << "\n"
+                  << "\t- destination mountpoint: " << sParser.settings().destinationMountpoint() << "\n"
+                  << "\t- destination password: " << sParser.settings().destinationPassword() << "\n"
+                  << "\t- destination port: " << sParser.settings().destinationPort() << "\n"
+                  << "\t- destination server: " << sParser.settings().destinationServer() << "\n"
                   << "\t- GGA: " << sParser.settings().gga() << "\n"
+                  << "\t- help: " << (sParser.settings().isHelp() ? "yes" : "no") << "\n"
+                  << "\t- source login: " << sParser.settings().sourceLogin() << "\n"
+                  << "\t- source mountpoint: " << sParser.settings().sourceMountpoint() << "\n"
+                  << "\t- source password: " << sParser.settings().sourcePassword() << "\n"
+                  << "\t- source port: " << sParser.settings().sourcePort() << "\n"
+                  << "\t- source server: " << sParser.settings().sourceServer() << "\n"
                   << "\t- verbosity level: " << sParser.settings().verbosity() << "\n"
-                  << "\t- port: " << sParser.settings().port() << "\n"
-                  << "\t- connection timeout: " << sParser.settings().connectionTimeout() << std::endl;
+                  << "\t- version: " << (sParser.settings().isVersion() ? "yes" : "no") << std::endl;
     }
 
     try {
-        assert(!sParser.settings().server().empty() && "Server must be specified!");
+        assert(!sParser.settings().sourceServer().empty() && "Source server must be specified!");
+        assert(!sParser.settings().destinationServer().empty() && "Destination server must be specified!");
         boost::asio::io_service ioService;
-        ClientPtr client;
+        RelayPtr relay;
 
-        if (sParser.settings().mountpoint().empty()) {
-            client.reset(new Client(ioService, sParser.settings().server(),
-                                    sParser.settings().port()));
-        } else {
-            client.reset(new Client(ioService, sParser.settings().server(),
-                                    sParser.settings().port(),
-                                    sParser.settings().mountpoint()));
+        relay.reset(new Relay(ioService,
+                              sParser.settings().sourceServer(),
+                              sParser.settings().sourcePort(),
+                              sParser.settings().sourceMountpoint(),
+                              sParser.settings().destinationServer(),
+                              sParser.settings().destinationPort(),
+                              sParser.settings().destinationMountpoint()));
+
+        relay->setErrorCallback(printError);
+        if (!sParser.settings().sourceLogin().empty() ||
+            !sParser.settings().sourcePassword().empty()) {
+            relay->setSourceCredentials(sParser.settings().sourceLogin(),
+                                        sParser.settings().sourcePassword());
         }
-
-        client->setDataCallback(printData);
-        client->setErrorCallback(printError);
-        if (!sParser.settings().login().empty() ||
-            !sParser.settings().password().empty()) {
-            client->setCredentials(sParser.settings().login(),
-                                   sParser.settings().password());
+        if (!sParser.settings().destinationLogin().empty() ||
+            !sParser.settings().destinationPassword().empty()) {
+            relay->setDestinationCredentials(sParser.settings().destinationLogin(),
+                                             sParser.settings().destinationPassword());
         }
         if (!sParser.settings().gga().empty())
-            client->setGGA(sParser.settings().gga());
+            relay->setGGA(sParser.settings().gga());
 
-        client->start(sParser.settings().connectionTimeout());
+        relay->start(sParser.settings().connectionTimeout());
 
         ioService.run();
     }
     catch (CasterError & e) {
-        ERRLOG(logError) << "Client error: " << e.what();
+        ERRLOG(logError) << "Relay error: " << e.what();
     }
     catch (std::exception & e) {
         ERRLOG(logFatal) << "System error: " << e.what();
@@ -139,13 +151,7 @@ void configureLogger(const SettingsParser & parser)
     }
 }
 
-void printData(const boost::array<char, 1024> & data,
-               size_t amount)
-{
-    std::cout << std::string(data.begin(), data.begin() + amount);
-}
-
 void printError(const boost::system::error_code & code)
 {
-    ERRLOG(logError) << "Client error: " << code.message();
+    ERRLOG(logError) << "Relay error: " << code.message();
 }
