@@ -1,0 +1,11 @@
+#ifndef __CASTER_VERSION_H__
+#define __CASTER_VERSION_H__
+
+#include <string>
+
+namespace Caster {
+    static const std::string version("1.4.1");
+    static const std::string revision("@REVNO@");
+}
+
+#endif
