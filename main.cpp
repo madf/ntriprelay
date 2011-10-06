@@ -96,12 +96,12 @@ int main(int argc, char * argv[])
         relay->setErrorCallback(printError);
         if (!sParser.settings().sourceLogin().empty() ||
             !sParser.settings().sourcePassword().empty()) {
-            relay->setSourceCredentials(sParser.settings().sourceLogin(),
+            relay->setSrcCredentials(sParser.settings().sourceLogin(),
                                         sParser.settings().sourcePassword());
         }
         if (!sParser.settings().destinationLogin().empty() ||
             !sParser.settings().destinationPassword().empty()) {
-            relay->setDestinationCredentials(sParser.settings().destinationLogin(),
+            relay->setDstCredentials(sParser.settings().destinationLogin(),
                                              sParser.settings().destinationPassword());
         }
         if (!sParser.settings().gga().empty())
