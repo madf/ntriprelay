@@ -9,6 +9,7 @@ SOURCES = main.cpp \
 	  relay.cpp \
 	  client.cpp \
 	  server.cpp \
+	  connection.cpp \
 	  settings.cpp \
 	  logger.cpp \
 	  log_writer.cpp \
