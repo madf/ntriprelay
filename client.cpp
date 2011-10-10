@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include "client.h"
 #include "version.h"
+
+#include "client.h"
 
 using Caster::Client;
 using namespace boost::asio;
