@@ -310,9 +310,11 @@ void Connection::_handleReadData(const boost::system::error_code & error,
 void Connection::_shutdown()
 {
     _active = false;
+    if (!_socket.is_open())
+        return;
     boost::system::error_code ec;
     _socket.shutdown(tcp::socket::shutdown_both, ec);
-    _socket.close();
+    _socket.close(ec);
 }
 
 void Connection::_handleTimeout()
