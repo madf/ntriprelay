@@ -32,6 +32,7 @@ class Server : public boost::enable_shared_from_this<Server>,
 
         void setErrorCallback(const ErrorCallback & cb)
         { Connection::setErrorCallback(cb); }
+        void resetErrorCallback() { Connection::resetErrorCallback(); }
 
         bool isActive() const { return Connection::isActive(); }
 
