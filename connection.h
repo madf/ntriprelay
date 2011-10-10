@@ -24,6 +24,7 @@ class Connection : private boost::noncopyable {
         Connection(boost::asio::io_service & ioService,
                    const std::string & server, uint16_t port,
                    const std::string & mountpoint);
+        virtual ~Connection() {}
 
         void start();
         void start(unsigned timeout);
@@ -36,6 +37,10 @@ class Connection : private boost::noncopyable {
         void setErrorCallback(const ErrorCallback & cb) { _errorCallback = cb; }
         void setDataCallback(const DataCallback & cb) { _dataCallback = cb; }
         void setEOFCallback(const EOFCallback & cb) { _eofCallback = cb; }
+
+        void resetErrorCallback() { _errorCallback.clear(); }
+        void resetDataCallback() { _dataCallback.clear(); }
+        void resetEOFCallback() { _eofCallback.clear(); }
 
         const std::vector<std::string> & headers() const { return _headers; }
 
