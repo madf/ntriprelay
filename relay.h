@@ -24,29 +24,36 @@ class Relay : public boost::enable_shared_from_this<Relay>,
               const std::string & srcMountpoint,
               const std::string & dstServer, uint16_t dstPort,
               const std::string & dstMountpoint);
+        ~Relay();
 
         void start()
-        { _clientPtr->start(); _serverPtr->start(); }
+        { _initCallbacks(); _client.start(); _server.start(); }
         void start(unsigned timeout)
-        { _clientPtr->start(timeout); _serverPtr->start(timeout); }
+        {
+            _initCallbacks();
+            _client.start(timeout);
+            _server.start(timeout);
+        }
 
-        void setGGA(const std::string & gga) { _clientPtr->setGGA(gga); }
+        void setGGA(const std::string & gga) { _client.setGGA(gga); }
         void setSrcCredentials(const std::string & login,
                                const std::string & password)
-        { _clientPtr->setCredentials(login, password); }
+        { _client.setCredentials(login, password); }
         void setDstCredentials(const std::string & login,
                                const std::string & password)
-        { _serverPtr->setCredentials(login, password); }
+        { _server.setCredentials(login, password); }
 
         void setErrorCallback(const ErrorCallback & cb) { _errorCallback = cb; }
         void setEOFCallback(const EOFCallback & cb) { _eofCallback = cb; }
 
     private:
-        ClientPtr _clientPtr;
-        ServerPtr _serverPtr;
+        Client _client;
+        Server _server;
         ErrorCallback _errorCallback;
         EOFCallback _eofCallback;
 
+        void _initCallbacks();
+        void _clearCallbacks();
         void _handleError(const boost::system::error_code & code);
         void _handleData(const boost::array<char, 1024> & data,
                          size_t amount);

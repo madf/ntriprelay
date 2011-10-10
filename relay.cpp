@@ -9,19 +9,27 @@ Relay::Relay(boost::asio::io_service & ioService,
              const std::string & srcMountpoint,
              const std::string & dstServer, uint16_t dstPort,
              const std::string & dstMountpoint)
-    : _clientPtr(new Client(ioService, srcServer, srcPort, srcMountpoint)),
-      _serverPtr(new Server(ioService, dstServer, dstPort, dstMountpoint)),
+    : _client(ioService, srcServer, srcPort, srcMountpoint),
+      _server(ioService, dstServer, dstPort, dstMountpoint),
       _errorCallback(),
       _eofCallback()
 {
-    _clientPtr->setErrorCallback(
+}
+
+Relay::~Relay()
+{
+}
+
+void Relay::_initCallbacks()
+{
+    _client.setErrorCallback(
         boost::bind(
             &Relay::_handleError,
             shared_from_this(),
             _1
         )
     );
-    _clientPtr->setDataCallback(
+    _client.setDataCallback(
         boost::bind(
             &Relay::_handleData,
             shared_from_this(),
@@ -29,13 +37,13 @@ Relay::Relay(boost::asio::io_service & ioService,
             _2
         )
     );
-    _clientPtr->setEOFCallback(
+    _client.setEOFCallback(
         boost::bind(
             &Relay::_handleEOF,
             shared_from_this()
         )
     );
-    _serverPtr->setErrorCallback(
+    _server.setErrorCallback(
         boost::bind(
             &Relay::_handleError,
             shared_from_this(),
@@ -44,29 +52,35 @@ Relay::Relay(boost::asio::io_service & ioService,
     );
 }
 
+void Relay::_clearCallbacks()
+{
+    _client.resetErrorCallback();
+    _client.resetDataCallback();
+    _client.resetEOFCallback();
+    _server.resetErrorCallback();
+}
+
 void Relay::_handleError(const boost::system::error_code & ec)
 {
     if (!_errorCallback.empty())
         _errorCallback(ec);
-    if (_clientPtr->isActive())
-        _clientPtr->stop();
-    if (_serverPtr->isActive())
-        _serverPtr->stop();
+    _clearCallbacks();
+    _client.stop();
+    _server.stop();
 }
 
 void Relay::_handleData(const boost::array<char, 1024> & data,
                         size_t amount)
 {
-    if (_serverPtr->isActive())
-        _serverPtr->send(boost::asio::buffer(data, amount));
+    if (_server.isActive())
+        _server.send(boost::asio::buffer(data, amount));
 }
 
 void Relay::_handleEOF()
 {
     if (!_eofCallback.empty())
         _eofCallback();
-    if (_clientPtr->isActive())
-        _clientPtr->stop();
-    if (_serverPtr->isActive())
-        _serverPtr->stop();
+    _clearCallbacks();
+    _client.stop();
+    _server.stop();
 }
