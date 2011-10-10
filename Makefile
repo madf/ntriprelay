@@ -16,7 +16,7 @@ SOURCES = main.cpp \
 	  base64.cpp \
 	  authenticator.cpp
 
-.PHONY: all clean version.h
+.PHONY: all clean
 
 all: $(PROG)
 
@@ -26,7 +26,7 @@ $(PROG): version.h $(addsuffix .o,$(basename $(SOURCES)))
 clean:
 	rm -f $(addsuffix .o,$(basename $(SOURCES))) $(addsuffix .d,$(SOURCES)) $(PROG)
 
-version.h:
+version.h: $(SOURCES) $(filter-out version.h,$(wildcard *.h))
 	@sed "s/@REVNO@/"`git describe`"/" version.h.in > version.h
 
 ifneq ($(MAKECMDGOALS),distclean)
