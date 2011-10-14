@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/bind.hpp>
 
 #include "authenticator.h"
 #include "callbacks.h"
@@ -29,7 +30,9 @@ class Connection : private boost::noncopyable {
         void start();
         void start(unsigned timeout);
         void stop() { _shutdown(); }
-        void send(const boost::asio::const_buffer & buffer);
+
+        template <typename T>
+        void send(const T & buffers);
 
         void setCredentials(const std::string & login,
                             const std::string & password);
@@ -62,7 +65,7 @@ class Connection : private boost::noncopyable {
     private:
         tcp::resolver _resolver;
         boost::asio::streambuf _response;
-        boost::array<char, 1024> _buffer;
+        boost::array<char, 2048> _buffer;
         ErrorCallback _errorCallback;
         DataCallback  _dataCallback;
         EOFCallback _eofCallback;
@@ -81,6 +84,24 @@ class Connection : private boost::noncopyable {
         void _handleTimeout();
         void _shutdown();
 };
+
+template <typename T>
+inline
+void Connection::send(const T & buffers)
+{
+    if (_timeout)
+        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+
+    async_write(
+        _socket,
+        buffers,
+        boost::bind(
+            &Connection::_handleWriteData,
+            this,
+            boost::asio::placeholders::error
+        )
+    );
+}
 
 }
 
