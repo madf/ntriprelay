@@ -107,9 +107,15 @@ int main(int argc, char * argv[])
         if (!sParser.settings().gga().empty())
             relay->setGGA(sParser.settings().gga());
 
+        ERRLOG(logDebug) << "Before starting...";
+
         relay->start(sParser.settings().connectionTimeout());
 
+        ERRLOG(logDebug) << "Starting...";
+
         ioService.run();
+
+        ERRLOG(logDebug) << "Stopping...";
     }
     catch (CasterError & e) {
         ERRLOG(logError) << "Relay error: " << e.what();
