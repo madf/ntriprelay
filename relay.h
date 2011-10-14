@@ -55,7 +55,7 @@ class Relay : public boost::enable_shared_from_this<Relay>,
         void _initCallbacks();
         void _clearCallbacks();
         void _handleError(const boost::system::error_code & code);
-        void _handleData(const boost::array<char, 1024> & data,
+        void _handleData(const boost::array<char, 2048> & data,
                          size_t amount);
         void _handleEOF();
 };

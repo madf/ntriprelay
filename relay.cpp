@@ -69,7 +69,7 @@ void Relay::_handleError(const boost::system::error_code & ec)
     _server.stop();
 }
 
-void Relay::_handleData(const boost::array<char, 1024> & data,
+void Relay::_handleData(const boost::array<char, 2048> & data,
                         size_t amount)
 {
     if (_server.isActive())
