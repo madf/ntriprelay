@@ -27,8 +27,7 @@ class Server : public boost::enable_shared_from_this<Server>,
                             const std::string & password)
         { Connection::setCredentials(login, password); }
 
-        void send(const boost::asio::const_buffer & buffer)
-        { Connection::send(buffer); }
+        void send(const boost::asio::const_buffer & buffer);
 
         void setErrorCallback(const ErrorCallback & cb)
         { Connection::setErrorCallback(cb); }

@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <boost/format.hpp>
+
 #include "version.h"
 
 #include "server.h"
@@ -13,6 +15,17 @@ Server::Server(boost::asio::io_service & ioService,
 {
 }
 
+void Server::send(const boost::asio::const_buffer & buffer)
+{
+    std::string dataLength((boost::format("%|x|\r\n") % boost::asio::buffer_size(buffer)).str());
+    boost::array<boost::asio::const_buffer, 3> bufs = {{
+        boost::asio::buffer(dataLength),
+        boost::asio::buffer(buffer),
+        boost::asio::buffer("\r\n", 2)
+    }};
+    Connection::send(bufs);
+}
+
 void Server::_prepareRequest()
 {
     std::ostream requestStream(&_request);
@@ -24,5 +37,6 @@ void Server::_prepareRequest()
     if (_auth.authenticated())
         requestStream << "Authorization: Basic " << _auth.basic() << "\r\n";
     requestStream << "Connection: close\r\n"
+                  << "Transfer-Encoding: chunked\r\n"
                   << "\r\n";
 }
