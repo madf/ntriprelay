@@ -1,4 +1,3 @@
-#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "error.h"
@@ -85,21 +84,6 @@ void Connection::start(unsigned timeout)
     );
 }
 
-void Connection::send(const boost::asio::const_buffer & buffer)
-{
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
-    async_write(
-        _socket,
-        boost::asio::buffer(buffer),
-        boost::bind(
-            &Connection::_handleWriteData,
-            this,
-            placeholders::error
-        )
-    );
-}
-
 void Connection::setCredentials(const std::string & login,
                             const std::string & password)
 {
@@ -124,7 +108,14 @@ void Connection::_handleResolve(const boost::system::error_code & error,
                 )
             );
         } else {
-            throw CasterError("Failed to resolve supplied address");
+            if (!_errorCallback.empty())
+                _errorCallback(
+                    boost::system::error_code(
+                        resolveError,
+                        CasterCategory::getInstance()
+                    )
+                );
+            _shutdown();
         }
     } else {
         if (!_errorCallback.empty())
@@ -195,7 +186,7 @@ void Connection::_handleWriteData(const boost::system::error_code & error)
 {
     if (_timeout)
         _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
-    if (error != error::operation_aborted) {
+    if (error && error != error::operation_aborted) {
         if (!_errorCallback.empty())
             _errorCallback(error);
         _shutdown();
@@ -217,6 +208,13 @@ void Connection::_handleReadStatus(const boost::system::error_code & error)
         if (code != 200) {
             ERRLOG(logError) << "Invalid status string:\n"
                           << proto << " " << code << " " << message;
+            if (!_errorCallback.empty())
+                _errorCallback(
+                    boost::system::error_code(
+                        invalidStatus,
+                        CasterCategory::getInstance()
+                    )
+                );
             _shutdown();
             return;
         }
@@ -325,6 +323,13 @@ void Connection::_handleTimeout()
         // deadline before this actor had a chance to run.
         if (_timeouter.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
             ERRLOG(logInfo) << "Connection timeout detected, shutting it down" << std::endl;
+            if (!_errorCallback.empty())
+                _errorCallback(
+                    boost::system::error_code(
+                        connectionTimeout,
+                        CasterCategory::getInstance()
+                    )
+                );
             _shutdown();
             return;
         }
