@@ -18,8 +18,6 @@ class NTRIPRequest;
 class Client : public boost::enable_shared_from_this<Client>,
                public Connection {
     public:
-        enum { Basic, Digest };
-
         Client(boost::asio::io_service & ioService,
                const std::string & server, uint16_t port);
 
