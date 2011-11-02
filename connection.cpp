@@ -11,6 +11,15 @@ using namespace MADF;
 using Caster::Connection;
 using namespace boost::asio;
 
+namespace {
+
+typedef std::pair<std::string, std::string> StringPair;
+
+StringPair splitString(const std::string & src, char delimiter);
+StringPair trimStringPair(const StringPair & pair);
+
+}
+
 Connection::Connection(boost::asio::io_service & ioService,
                        const std::string & server, uint16_t port)
     : _server(server),
@@ -256,7 +265,7 @@ void Connection::_handleReadHeaders(const boost::system::error_code & error)
         std::istream headersStream(&_response);
         std::string header;
         while (std::getline(headersStream, header) && header != "\r") {
-            _headers.push_back(header);
+            _headers.insert(trimStringPair(splitString(header, ':')));
         }
         _active = true;
         _socket.async_read_some(
@@ -341,4 +350,27 @@ void Connection::_handleTimeout()
                 )
         );
     }
+}
+
+namespace {
+
+inline
+StringPair splitString(const std::string & src, const char delimiter)
+{
+    const size_t pos = src.find_first_of(delimiter);
+    if (pos != std::string::npos) {
+        return std::make_pair(src.substr(0, pos), src.substr(pos + 1));
+    } else {
+        return std::make_pair(src, "");
+    }
+}
+
+inline
+StringPair trimStringPair(const StringPair & pair)
+{
+    const size_t lpos = pair.second.find_first_not_of(" \t");
+    const size_t rpos = pair.second.find_last_not_of(" \t\r\n", lpos);
+    return std::make_pair(pair.first, pair.second.substr(lpos, rpos - lpos + 1));
+}
+
 }

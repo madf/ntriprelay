@@ -45,7 +45,7 @@ class Connection : private boost::noncopyable {
         void resetDataCallback() { _dataCallback.clear(); }
         void resetEOFCallback() { _eofCallback.clear(); }
 
-        const std::vector<std::string> & headers() const { return _headers; }
+        const std::map<std::string, std::string> & headers() const { return _headers; }
 
         bool isActive() const { return _active; }
 
@@ -55,7 +55,7 @@ class Connection : private boost::noncopyable {
         std::string _uri;
         Authenticator _auth;
         unsigned _timeout;
-        std::vector<std::string> _headers;
+        std::map<std::string, std::string> _headers;
         tcp::socket _socket;
         boost::asio::deadline_timer _timeouter;
         boost::asio::streambuf _request;
