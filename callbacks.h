@@ -11,6 +11,7 @@ typedef boost::function<void (const boost::system::error_code & code)> ErrorCall
 typedef boost::function<void (const boost::array<char, 2048> & data,
                               size_t amount)> DataCallback;
 typedef boost::function<void ()> EOFCallback;
+typedef boost::function<void ()> HeadersCallback;
 
 }
 
