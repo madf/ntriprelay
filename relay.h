@@ -45,6 +45,9 @@ class Relay : public boost::enable_shared_from_this<Relay>,
 
         void setErrorCallback(const ErrorCallback & cb) { _errorCallback = cb; }
         void setEOFCallback(const EOFCallback & cb) { _eofCallback = cb; }
+        void setHeadersCallback(const HeadersCallback & cb) { _client.setHeadersCallback(cb); }
+
+        const std::map<std::string, std::string> & headers() const { return _client.headers(); }
 
     private:
         Client _client;

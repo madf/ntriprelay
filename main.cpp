@@ -19,6 +19,7 @@ using namespace Caster;
 
 void configureLogger(const SettingsParser & parser);
 void printError(const boost::system::error_code & code);
+void printHeaders(const RelayPtr relayPtr);
 
 int main(int argc, char * argv[])
 {
@@ -94,6 +95,7 @@ int main(int argc, char * argv[])
                               sParser.settings().destinationMountpoint()));
 
         relay->setErrorCallback(printError);
+        relay->setHeadersCallback(boost::bind(printHeaders, relay));
         if (!sParser.settings().sourceLogin().empty() ||
             !sParser.settings().sourcePassword().empty()) {
             relay->setSrcCredentials(sParser.settings().sourceLogin(),
@@ -160,4 +162,12 @@ void configureLogger(const SettingsParser & parser)
 void printError(const boost::system::error_code & code)
 {
     ERRLOG(logError) << "Relay error: " << code.message();
+}
+
+void printHeaders(const RelayPtr relayPtr)
+{
+    std::map<std::string, std::string>::const_iterator it;
+    for (it = relayPtr->headers().begin(); it != relayPtr->headers().end(); ++it) {
+        ERRLOG(logInfo) << it->first << ": " << it->second;
+    }
 }
