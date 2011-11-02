@@ -40,10 +40,12 @@ class Connection : private boost::noncopyable {
         void setErrorCallback(const ErrorCallback & cb) { _errorCallback = cb; }
         void setDataCallback(const DataCallback & cb) { _dataCallback = cb; }
         void setEOFCallback(const EOFCallback & cb) { _eofCallback = cb; }
+        void setHeadersCallback(const HeadersCallback & cb) { _headersCallback = cb; }
 
         void resetErrorCallback() { _errorCallback.clear(); }
         void resetDataCallback() { _dataCallback.clear(); }
         void resetEOFCallback() { _eofCallback.clear(); }
+        void resetHeadersCallback() { _headersCallback.clear(); }
 
         const std::map<std::string, std::string> & headers() const { return _headers; }
 
@@ -69,6 +71,8 @@ class Connection : private boost::noncopyable {
         ErrorCallback _errorCallback;
         DataCallback _dataCallback;
         EOFCallback _eofCallback;
+        HeadersCallback _headersCallback;
+        bool _chunked;
         bool _active;
 
         void _handleResolve(const boost::system::error_code & error,

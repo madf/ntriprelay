@@ -37,6 +37,8 @@ Connection::Connection(boost::asio::io_service & ioService,
       _errorCallback(),
       _dataCallback(),
       _eofCallback(),
+      _headersCallback(),
+      _chunked(false),
       _active(false)
 {
 }
@@ -59,6 +61,7 @@ Connection::Connection(boost::asio::io_service & ioService,
       _errorCallback(),
       _dataCallback(),
       _eofCallback(),
+      _chunked(false),
       _active(false)
 {
     if (mountpoint[0] != '/')
@@ -265,8 +268,16 @@ void Connection::_handleReadHeaders(const boost::system::error_code & error)
         std::istream headersStream(&_response);
         std::string header;
         while (std::getline(headersStream, header) && header != "\r") {
-            _headers.insert(trimStringPair(splitString(header, ':')));
+            const StringPair pair(trimStringPair(splitString(header, ':')));
+            _headers.insert(pair);
+            if (pair.first == "Transfer-Encoding" &&
+                pair.second == "chunked") {
+                ERRLOG(logDebug) << "Transfer-Encoding: chunked";
+                _chunked = true;
+            }
         }
+        if (!_headersCallback.empty())
+            _headersCallback();
         _active = true;
         _socket.async_read_some(
             buffer(_buffer),
@@ -369,7 +380,7 @@ inline
 StringPair trimStringPair(const StringPair & pair)
 {
     const size_t lpos = pair.second.find_first_not_of(" \t");
-    const size_t rpos = pair.second.find_last_not_of(" \t\r\n", lpos);
+    const size_t rpos = pair.second.find_last_not_of(" \t\r\n", std::string::npos, 4);
     return std::make_pair(pair.first, pair.second.substr(lpos, rpos - lpos + 1));
 }
 
