@@ -67,7 +67,7 @@ class Connection : private boost::noncopyable {
         boost::asio::streambuf _response;
         boost::array<char, 2048> _buffer;
         ErrorCallback _errorCallback;
-        DataCallback  _dataCallback;
+        DataCallback _dataCallback;
         EOFCallback _eofCallback;
         bool _active;
 
