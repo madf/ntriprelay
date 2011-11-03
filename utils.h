@@ -15,13 +15,13 @@ size_t parseChunkLength(const boost::asio::const_buffers_1 & buffers,
 {
     assert(buffers.begin() != buffers.end());
 
-    namespace phx = boost::phoenix;
+    namespace phoenix = boost::phoenix;
     namespace qi = boost::spirit::qi;
 
     boost::asio::const_buffers_1::value_type::const_iterator begin(buffers.begin()->begin());
     const boost::asio::const_buffers_1::value_type::const_iterator end(buffers.begin()->end());
 
-    qi::parse(begin, end, (qi::hex[phx::ref(length) = qi::_1] >> +(qi::char_-'\r') > "\r\n"));
+    qi::parse(begin, end, (qi::hex[phoenix::ref(length) = qi::_1] >> +(qi::char_-'\r') > "\r\n"));
     return std::distance(begin, end);
 }
 
