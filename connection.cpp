@@ -429,6 +429,23 @@ void Connection::_handleReadChunkData(const boost::system::error_code & error,
     }
 }
 
+void Connection::send(const boost::asio::const_buffers_1 & buffers)
+{
+    if (_timeout)
+        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+
+    async_write(
+        _socket,
+        buffers,
+        transfer_all(),
+        boost::bind(
+            &Connection::_handleWriteData,
+            this,
+            boost::asio::placeholders::error
+        )
+    );
+}
+
 void Connection::_shutdown()
 {
     _active = false;
