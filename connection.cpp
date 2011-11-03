@@ -35,7 +35,6 @@ Connection::Connection(boost::asio::io_service & ioService,
       _request(),
       _resolver(ioService),
       _response(),
-      _buffer(),
       _errorCallback(),
       _dataCallback(),
       _eofCallback(),
@@ -59,7 +58,6 @@ Connection::Connection(boost::asio::io_service & ioService,
       _request(),
       _resolver(ioService),
       _response(),
-      _buffer(),
       _errorCallback(),
       _dataCallback(),
       _eofCallback(),
@@ -385,21 +383,41 @@ void Connection::_handleReadChunkData(const boost::system::error_code & error,
 {
     if (_timeout)
         _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
-    if (size) {
-        if (!_dataCallback.empty())
-            _dataCallback(buffer(_response.data(), size));
-        _response.consume(size + 2);
+    if (size > 0) {
+        if (size > _response.size()) {
+            if (!_dataCallback.empty())
+                _dataCallback(_response.data());
+        } else {
+            if (!_dataCallback.empty())
+                _dataCallback(buffer(_response.data(), size));
+        }
     }
     if (!error) {
-        async_read(
-            _socket,
-            _response,
-            boost::bind(
-                &Connection::_handleReadChunkLength,
-                this,
-                placeholders::error
-            )
-        );
+        if (size > _response.size()) {
+            _response.consume(_response.size());
+            async_read(
+                _socket,
+                _response,
+                transfer_at_least(size + 2 - _response.size()),
+                boost::bind(
+                    &Connection::_handleReadChunkData,
+                    this,
+                    placeholders::error,
+                    size - _response.size()
+                )
+            );
+        } else {
+            _response.consume(size + 2);
+            async_read(
+                _socket,
+                _response,
+                boost::bind(
+                    &Connection::_handleReadChunkLength,
+                    this,
+                    placeholders::error
+                )
+            );
+        }
     } else if (error == error::eof) {
         if (!_eofCallback.empty())
             _eofCallback();
