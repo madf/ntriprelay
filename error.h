@@ -11,7 +11,8 @@ enum {
     success,
     resolveError,
     invalidStatus,
-    connectionTimeout
+    connectionTimeout,
+    invalidChunkLength
 };
 
 class CasterError : public std::runtime_error {
@@ -35,6 +36,8 @@ class CasterCategory : public boost::system::error_category
                     return "Invalid status string";
                 case connectionTimeout:
                     return "Connection timeout";
+                case invalidChunkLength:
+                    return "Invalid chunk length";
                 default:
                     return "Unknown error";
             };

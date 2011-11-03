@@ -83,8 +83,10 @@ class Connection : private boost::noncopyable {
         void _handleWriteData(const boost::system::error_code & error);
         void _handleReadStatus(const boost::system::error_code & error);
         void _handleReadHeaders(const boost::system::error_code & error);
-        void _handleReadData(const boost::system::error_code & error,
-                             size_t amount);
+        void _handleReadData(const boost::system::error_code & error);
+        void _handleReadChunkLength(const boost::system::error_code & error);
+        void _handleReadChunkData(const boost::system::error_code & error,
+                                  size_t size);
         void _handleTimeout();
         void _shutdown();
 };

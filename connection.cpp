@@ -2,6 +2,7 @@
 
 #include "error.h"
 #include "logger.h"
+#include "utils.h"
 
 #include "connection.h"
 
@@ -9,6 +10,7 @@
 
 using namespace MADF;
 using Caster::Connection;
+using Caster::parseChunkLength;
 using namespace boost::asio;
 
 namespace {
@@ -146,6 +148,7 @@ void Connection::_handleConnect(const boost::system::error_code & error,
         async_write(
             _socket,
             _request,
+            transfer_all(),
             boost::bind(
                 &Connection::_handleWriteRequest,
                 this,
@@ -232,13 +235,13 @@ void Connection::_handleReadStatus(const boost::system::error_code & error)
         }
         if (proto == "ICY") {
             _active = true;
-            _socket.async_read_some(
-                buffer(_buffer),
+            async_read(
+                _socket,
+                _response,
                 boost::bind(
                     &Connection::_handleReadData,
                     this,
-                    placeholders::error,
-                    placeholders::bytes_transferred
+                    placeholders::error
                 )
             );
         } else {
@@ -279,15 +282,28 @@ void Connection::_handleReadHeaders(const boost::system::error_code & error)
         if (!_headersCallback.empty())
             _headersCallback();
         _active = true;
-        _socket.async_read_some(
-            buffer(_buffer),
-            boost::bind(
-                &Connection::_handleReadData,
-                this,
-                placeholders::error,
-                placeholders::bytes_transferred
-            )
-        );
+        if (_chunked) {
+            async_read_until(
+                _socket,
+                _response,
+                "\r\n",
+                boost::bind(
+                    &Connection::_handleReadChunkLength,
+                    this,
+                    placeholders::error
+                )
+            );
+        } else {
+            async_read(
+                _socket,
+                _response,
+                boost::bind(
+                    &Connection::_handleReadData,
+                    this,
+                    placeholders::error
+                )
+            );
+        }
     } else if (error != error::operation_aborted) {
         if (!_errorCallback.empty())
             _errorCallback(error);
@@ -295,23 +311,93 @@ void Connection::_handleReadHeaders(const boost::system::error_code & error)
     }
 }
 
-void Connection::_handleReadData(const boost::system::error_code & error,
-                                 size_t amount)
+void Connection::_handleReadData(const boost::system::error_code & error)
 {
     if (_timeout)
         _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
     if (amount) {
         if (!_dataCallback.empty())
-            _dataCallback(_buffer, amount);
+            _dataCallback(_response.data());
+        _response.consume(_response.size());
     }
     if (!error) {
-        _socket.async_read_some(
-            buffer(_buffer),
+        async_read(
+            _socket,
+            _response,
             boost::bind(
                 &Connection::_handleReadData,
                 this,
-                placeholders::error,
-                placeholders::bytes_transferred
+                placeholders::error
+            )
+        );
+    } else if (error == error::eof) {
+        if (!_eofCallback.empty())
+            _eofCallback();
+        _shutdown();
+    } else if (error != error::operation_aborted) {
+        if (!_errorCallback.empty())
+            _errorCallback(error);
+        _shutdown();
+    }
+}
+
+void Connection::_handleReadChunkLength(const boost::system::error_code & error)
+{
+    if (_timeout)
+        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (!error) {
+        size_t length = 0;
+        _response.consume(parseChunkLength(_response.data(), length));
+        if (length == 0) {
+            if (!_eofCallback.empty())
+                _eofCallback();
+            _shutdown();
+        } else {
+            if (_response.size() < length + 2) {
+                async_read(
+                    _socket,
+                    _response,
+                    transfer_at_least(length + 2 - _response.size()),
+                    boost::bind(
+                        &Connection::_handleReadChunkData,
+                        this,
+                        placeholders::error,
+                        length
+                    )
+                );
+            } else {
+                _handleReadChunkData(boost::system::error_code(), length);
+            }
+        }
+    } else if (error == error::eof) {
+        if (!_eofCallback.empty())
+            _eofCallback();
+        _shutdown();
+    } else if (error != error::operation_aborted) {
+        if (!_errorCallback.empty())
+            _errorCallback(error);
+        _shutdown();
+    }
+}
+
+void Connection::_handleReadChunkData(const boost::system::error_code & error,
+                                      size_t size)
+{
+    if (_timeout)
+        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (size) {
+        if (!_dataCallback.empty())
+            _dataCallback(buffer(_response.data(), size));
+        _response.consume(size + 2);
+    }
+    if (!error) {
+        async_read(
+            _socket,
+            _response,
+            boost::bind(
+                &Connection::_handleReadChunkLength,
+                this,
+                placeholders::error
             )
         );
     } else if (error == error::eof) {
