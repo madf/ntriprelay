@@ -69,11 +69,10 @@ void Relay::_handleError(const boost::system::error_code & ec)
     _server.stop();
 }
 
-void Relay::_handleData(const boost::array<char, 2048> & data,
-                        size_t amount)
+void Relay::_handleData(const boost::asio::const_buffers_1 & buffers)
 {
     if (_server.isActive())
-        _server.send(boost::asio::buffer(data, amount));
+        _server.send(buffers);
 }
 
 void Relay::_handleEOF()
