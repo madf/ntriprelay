@@ -67,7 +67,6 @@ class Connection : private boost::noncopyable {
     private:
         tcp::resolver _resolver;
         boost::asio::streambuf _response;
-        boost::array<char, 2048> _buffer;
         ErrorCallback _errorCallback;
         DataCallback _dataCallback;
         EOFCallback _eofCallback;
