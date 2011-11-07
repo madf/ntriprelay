@@ -34,7 +34,7 @@ Connection::Connection(boost::asio::io_service & ioService,
       _timeouter(ioService),
       _request(),
       _resolver(ioService),
-      _response(),
+      _response(1024),
       _errorCallback(),
       _dataCallback(),
       _eofCallback(),
@@ -57,7 +57,7 @@ Connection::Connection(boost::asio::io_service & ioService,
       _timeouter(ioService),
       _request(),
       _resolver(ioService),
-      _response(),
+      _response(1024),
       _errorCallback(),
       _dataCallback(),
       _eofCallback(),
@@ -313,15 +313,18 @@ void Connection::_handleReadData(const boost::system::error_code & error)
 {
     if (_timeout)
         _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
-    if (amount) {
+
+    if (_response.size()) {
         if (!_dataCallback.empty())
             _dataCallback(_response.data());
         _response.consume(_response.size());
     }
+
     if (!error) {
         async_read(
             _socket,
             _response,
+            transfer_at_least(1),
             boost::bind(
                 &Connection::_handleReadData,
                 this,
@@ -343,6 +346,7 @@ void Connection::_handleReadChunkLength(const boost::system::error_code & error)
 {
     if (_timeout)
         _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+
     if (!error) {
         size_t length = 0;
         _response.consume(parseChunkLength(_response.data(), length));
@@ -383,6 +387,7 @@ void Connection::_handleReadChunkData(const boost::system::error_code & error,
 {
     if (_timeout)
         _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+
     if (size > 0) {
         if (size > _response.size()) {
             if (!_dataCallback.empty())
@@ -394,23 +399,25 @@ void Connection::_handleReadChunkData(const boost::system::error_code & error,
     }
     if (!error) {
         if (size > _response.size()) {
+            const size_t remainder = size + 2 - _response.size();
             _response.consume(_response.size());
             async_read(
                 _socket,
                 _response,
-                transfer_at_least(size + 2 - _response.size()),
+                transfer_at_least(remainder),
                 boost::bind(
                     &Connection::_handleReadChunkData,
                     this,
                     placeholders::error,
-                    size - _response.size()
+                    remainder - 2
                 )
             );
         } else {
             _response.consume(size + 2);
-            async_read(
+            async_read_until(
                 _socket,
                 _response,
+                "\r\n",
                 boost::bind(
                     &Connection::_handleReadChunkLength,
                     this,
@@ -427,23 +434,6 @@ void Connection::_handleReadChunkData(const boost::system::error_code & error,
             _errorCallback(error);
         _shutdown();
     }
-}
-
-void Connection::send(const boost::asio::const_buffers_1 & buffers)
-{
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
-
-    async_write(
-        _socket,
-        buffers,
-        transfer_all(),
-        boost::bind(
-            &Connection::_handleWriteData,
-            this,
-            boost::asio::placeholders::error
-        )
-    );
 }
 
 void Connection::_shutdown()
