@@ -30,7 +30,8 @@ class Connection : private boost::noncopyable {
         void start(unsigned timeout);
         void stop() { _shutdown(); }
 
-        void send(const boost::asio::const_buffers_1 & buffers);
+        template <typename ConstBufferSequence>
+        void send(const ConstBufferSequence & buffers);
 
         void setCredentials(const std::string & login,
                             const std::string & password);
@@ -87,6 +88,25 @@ class Connection : private boost::noncopyable {
         void _handleTimeout();
         void _shutdown();
 };
+
+template <typename ConstBufferSequence>
+inline
+void Connection::send(const ConstBufferSequence & buffers)
+{
+    if (_timeout)
+        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+
+    async_write(
+        _socket,
+        buffers,
+        boost::asio::transfer_all(),
+        boost::bind(
+            &Connection::_handleWriteData,
+            this,
+            boost::asio::placeholders::error
+        )
+    );
+}
 
 }
 
