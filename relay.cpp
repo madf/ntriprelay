@@ -33,8 +33,7 @@ void Relay::_initCallbacks()
         boost::bind(
             &Relay::_handleData,
             shared_from_this(),
-            _1,
-            _2
+            _1
         )
     );
     _client.setEOFCallback(
