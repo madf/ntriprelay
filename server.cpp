@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include <boost/format.hpp>
+#include <boost/array.hpp>
+#include <boost/asio/buffer.hpp>
 
 #include "version.h"
 
@@ -17,8 +19,8 @@ Server::Server(boost::asio::io_service & ioService,
 
 void Server::send(const boost::asio::const_buffer & buffer)
 {
-    std::string dataLength((boost::format("%|x|\r\n") % boost::asio::buffer_size(buffer)).str());
-    boost::array<boost::asio::const_buffer, 3> bufs = {{
+    const std::string dataLength((boost::format("%|x|\r\n") % boost::asio::buffer_size(buffer)).str());
+    const boost::array<boost::asio::const_buffer, 3> bufs = {{
         boost::asio::buffer(dataLength),
         boost::asio::buffer(buffer),
         boost::asio::buffer("\r\n", 2)
