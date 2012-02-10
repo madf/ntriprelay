@@ -25,12 +25,12 @@ class Client : public boost::enable_shared_from_this<Client>,
                const std::string & server, uint16_t port,
                const std::string & mountpoint);
 
-        void setGGA(const std::string & gga) { _gga = gga; }
+        void setGGA(const std::string & gga) { m_gga = gga; }
 
     private:
-        std::string _gga;
+        std::string m_gga;
 
-        void _prepareRequest();
+        void m_prepareRequest();
 };
 
 typedef boost::shared_ptr<Client> ClientPtr;

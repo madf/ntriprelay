@@ -28,16 +28,16 @@ void Server::send(const boost::asio::const_buffer & buffer)
     Connection::send(bufs);
 }
 
-void Server::_prepareRequest()
+void Server::m_prepareRequest()
 {
-    std::ostream requestStream(&_request);
-    requestStream << "POST " << _uri << " HTTP/1.1\r\n"
-                  << "Host: " << _server << "\r\n"
+    std::ostream requestStream(&m_request);
+    requestStream << "POST " << m_uri << " HTTP/1.1\r\n"
+                  << "Host: " << m_server << "\r\n"
                   << "Ntrip-Version: Ntrip/2.0\r\n"
                   << "User-Agent: Boost.Asio NTRIP Server " << version
                   << "\r\n";
-    if (_auth.authenticated())
-        requestStream << "Authorization: Basic " << _auth.basic() << "\r\n";
+    if (m_auth.authenticated())
+        requestStream << "Authorization: Basic " << m_auth.basic() << "\r\n";
     requestStream << "Connection: close\r\n"
                   << "Transfer-Encoding: chunked\r\n"
                   << "\r\n";

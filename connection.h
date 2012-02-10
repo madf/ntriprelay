@@ -28,7 +28,7 @@ class Connection : private boost::noncopyable {
 
         void start();
         void start(unsigned timeout);
-        void stop() { _shutdown(); }
+        void stop() { m_shutdown(); }
 
         template <typename ConstBufferSequence>
         void send(const ConstBufferSequence & buffers);
@@ -36,72 +36,72 @@ class Connection : private boost::noncopyable {
         void setCredentials(const std::string & login,
                             const std::string & password);
 
-        void setErrorCallback(const ErrorCallback & cb) { _errorCallback = cb; }
-        void setDataCallback(const DataCallback & cb) { _dataCallback = cb; }
-        void setEOFCallback(const EOFCallback & cb) { _eofCallback = cb; }
-        void setHeadersCallback(const HeadersCallback & cb) { _headersCallback = cb; }
+        void setErrorCallback(const ErrorCallback & cb) { m_errorCallback = cb; }
+        void setDataCallback(const DataCallback & cb) { m_dataCallback = cb; }
+        void setEOFCallback(const EOFCallback & cb) { m_eofCallback = cb; }
+        void setHeadersCallback(const HeadersCallback & cb) { m_headersCallback = cb; }
 
-        void resetErrorCallback() { _errorCallback.clear(); }
-        void resetDataCallback() { _dataCallback.clear(); }
-        void resetEOFCallback() { _eofCallback.clear(); }
-        void resetHeadersCallback() { _headersCallback.clear(); }
+        void resetErrorCallback() { m_errorCallback.clear(); }
+        void resetDataCallback() { m_dataCallback.clear(); }
+        void resetEOFCallback() { m_eofCallback.clear(); }
+        void resetHeadersCallback() { m_headersCallback.clear(); }
 
-        const std::map<std::string, std::string> & headers() const { return _headers; }
+        const std::map<std::string, std::string> & headers() const { return m_headers; }
 
-        bool isActive() const { return _active; }
+        bool isActive() const { return m_active; }
 
     protected:
-        std::string _server;
-        uint16_t _port;
-        std::string _uri;
-        Authenticator _auth;
-        unsigned _timeout;
-        std::map<std::string, std::string> _headers;
-        tcp::socket _socket;
-        boost::asio::deadline_timer _timeouter;
-        boost::asio::streambuf _request;
+        std::string m_server;
+        uint16_t m_port;
+        std::string m_uri;
+        Authenticator m_auth;
+        unsigned m_timeout;
+        std::map<std::string, std::string> m_headers;
+        tcp::socket m_socket;
+        boost::asio::deadline_timer m_timeouter;
+        boost::asio::streambuf m_request;
 
-        virtual void _prepareRequest() = 0;
+        virtual void m_prepareRequest() = 0;
 
     private:
-        tcp::resolver _resolver;
-        boost::asio::streambuf _response;
-        ErrorCallback _errorCallback;
-        DataCallback _dataCallback;
-        EOFCallback _eofCallback;
-        HeadersCallback _headersCallback;
-        bool _chunked;
-        bool _active;
+        tcp::resolver m_resolver;
+        boost::asio::streambuf m_response;
+        ErrorCallback m_errorCallback;
+        DataCallback m_dataCallback;
+        EOFCallback m_eofCallback;
+        HeadersCallback m_headersCallback;
+        bool m_chunked;
+        bool m_active;
 
-        void _handleResolve(const boost::system::error_code & error,
-                            tcp::resolver::iterator it);
-        void _handleConnect(const boost::system::error_code & error,
-                            tcp::resolver::iterator it);
-        void _handleWriteRequest(const boost::system::error_code & error);
-        void _handleWriteData(const boost::system::error_code & error);
-        void _handleReadStatus(const boost::system::error_code & error);
-        void _handleReadHeaders(const boost::system::error_code & error);
-        void _handleReadData(const boost::system::error_code & error);
-        void _handleReadChunkLength(const boost::system::error_code & error);
-        void _handleReadChunkData(const boost::system::error_code & error,
-                                  size_t size);
-        void _handleTimeout();
-        void _shutdown();
+        void m_handleResolve(const boost::system::error_code & error,
+                             tcp::resolver::iterator it);
+        void m_handleConnect(const boost::system::error_code & error,
+                             tcp::resolver::iterator it);
+        void m_handleWriteRequest(const boost::system::error_code & error);
+        void m_handleWriteData(const boost::system::error_code & error);
+        void m_handleReadStatus(const boost::system::error_code & error);
+        void m_handleReadHeaders(const boost::system::error_code & error);
+        void m_handleReadData(const boost::system::error_code & error);
+        void m_handleReadChunkLength(const boost::system::error_code & error);
+        void m_handleReadChunkData(const boost::system::error_code & error,
+                                   size_t size);
+        void m_handleTimeout();
+        void m_shutdown();
 };
 
 template <typename ConstBufferSequence>
 inline
 void Connection::send(const ConstBufferSequence & buffers)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
 
     async_write(
-        _socket,
+        m_socket,
         buffers,
         boost::asio::transfer_all(),
         boost::bind(
-            &Connection::_handleWriteData,
+            &Connection::m_handleWriteData,
             this,
             boost::asio::placeholders::error
         )

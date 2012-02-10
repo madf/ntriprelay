@@ -6,23 +6,23 @@ using Caster::Authenticator;
 using Caster::CasterError;
 
 Authenticator::Authenticator()
-    : _login(),
-      _password(),
-      _authenticated(false)
+    : m_login(),
+      m_password(),
+      m_authenticated(false)
 {
 }
 
 Authenticator::Authenticator(const std::string & login,
                              const std::string & password)
-    : _login(login),
-      _password(password),
-      _authenticated(true)
+    : m_login(login),
+      m_password(password),
+      m_authenticated(true)
 {
 }
 
 std::string Authenticator::basic() const
 {
-    std::string credentials = _login + ":" + _password;
+    std::string credentials = m_login + ":" + m_password;
     return base64_encode(reinterpret_cast<const unsigned char *>(credentials.c_str()), credentials.length());
 }
 
@@ -37,12 +37,12 @@ std::string Authenticator::digest(const std::string & /*method*/,
 
 void Authenticator::setLogin(const std::string & login)
 {
-    _login = login;
-    _authenticated = true;
+    m_login = login;
+    m_authenticated = true;
 }
 
 void Authenticator::setPassword(const std::string & password)
 {
-    _password = password;
-    _authenticated = true;
+    m_password = password;
+    m_authenticated = true;
 }

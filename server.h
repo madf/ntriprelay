@@ -19,24 +19,17 @@ class Server : public boost::enable_shared_from_this<Server>,
                const std::string & server, uint16_t port,
                const std::string mountpoint);
 
-        void start() { Connection::start(); }
-        void start(unsigned timeout) { Connection::start(timeout); }
-        void stop() { Connection::stop(); }
-
-        void setCredentials(const std::string & login,
-                            const std::string & password)
-        { Connection::setCredentials(login, password); }
+        using Connection::start;
+        using Connection::stop;
+        using Connection::setCredentials;
+        using Connection::setErrorCallback;
+        using Connection::resetErrorCallback;
+        using Connection::isActive;
 
         void send(const boost::asio::const_buffer & buffer);
 
-        void setErrorCallback(const ErrorCallback & cb)
-        { Connection::setErrorCallback(cb); }
-        void resetErrorCallback() { Connection::resetErrorCallback(); }
-
-        bool isActive() const { return Connection::isActive(); }
-
     private:
-        void _prepareRequest();
+        void m_prepareRequest();
 };
 
 typedef boost::shared_ptr<Server> ServerPtr;

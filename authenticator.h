@@ -22,12 +22,12 @@ class Authenticator {
                            uint8_t qop,
                            const std::string & nonce) const;
 
-        bool authenticated() const { return _authenticated; }
+        bool authenticated() const { return m_authenticated; }
 
     private:
-        std::string _login;
-        std::string _password;
-        bool _authenticated;
+        std::string m_login;
+        std::string m_password;
+        bool m_authenticated;
 };
 
 }

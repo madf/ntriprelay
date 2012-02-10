@@ -24,58 +24,58 @@ StringPair trimStringPair(const StringPair & pair);
 
 Connection::Connection(boost::asio::io_service & ioService,
                        const std::string & server, uint16_t port)
-    : _server(server),
-      _port(port),
-      _uri("/"),
-      _auth(),
-      _timeout(0),
-      _headers(),
-      _socket(ioService),
-      _timeouter(ioService),
-      _request(),
-      _resolver(ioService),
-      _response(1024),
-      _errorCallback(),
-      _dataCallback(),
-      _eofCallback(),
-      _headersCallback(),
-      _chunked(false),
-      _active(false)
+    : m_server(server),
+      m_port(port),
+      m_uri("/"),
+      m_auth(),
+      m_timeout(0),
+      m_headers(),
+      m_socket(ioService),
+      m_timeouter(ioService),
+      m_request(),
+      m_resolver(ioService),
+      m_response(1024),
+      m_errorCallback(),
+      m_dataCallback(),
+      m_eofCallback(),
+      m_headersCallback(),
+      m_chunked(false),
+      m_active(false)
 {
 }
 
 Connection::Connection(boost::asio::io_service & ioService,
                        const std::string & server, uint16_t port,
                        const std::string & mountpoint)
-    : _server(server),
-      _port(port),
-      _uri(),
-      _auth(),
-      _timeout(0),
-      _headers(),
-      _socket(ioService),
-      _timeouter(ioService),
-      _request(),
-      _resolver(ioService),
-      _response(1024),
-      _errorCallback(),
-      _dataCallback(),
-      _eofCallback(),
-      _chunked(false),
-      _active(false)
+    : m_server(server),
+      m_port(port),
+      m_uri(),
+      m_auth(),
+      m_timeout(0),
+      m_headers(),
+      m_socket(ioService),
+      m_timeouter(ioService),
+      m_request(),
+      m_resolver(ioService),
+      m_response(1024),
+      m_errorCallback(),
+      m_dataCallback(),
+      m_eofCallback(),
+      m_chunked(false),
+      m_active(false)
 {
     if (mountpoint[0] != '/')
-        _uri = "/";
-    _uri += mountpoint;
+        m_uri = "/";
+    m_uri += mountpoint;
 }
 
 void Connection::start()
 {
-    tcp::resolver::query query(_server, boost::lexical_cast<std::string>(_port));
-    _resolver.async_resolve(
+    tcp::resolver::query query(m_server, boost::lexical_cast<std::string>(m_port));
+    m_resolver.async_resolve(
             query,
             boost::bind(
-                &Connection::_handleResolve,
+                &Connection::m_handleResolve,
                 this,
                 placeholders::error,
                 placeholders::iterator
@@ -85,70 +85,70 @@ void Connection::start()
 
 void Connection::start(unsigned timeout)
 {
-    _timeout = timeout;
+    m_timeout = timeout;
     start();
-    _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
-    _timeouter.async_wait(
+    m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
+    m_timeouter.async_wait(
             boost::bind(
-                &Connection::_handleTimeout,
+                &Connection::m_handleTimeout,
                 this
             )
     );
 }
 
 void Connection::setCredentials(const std::string & login,
-                            const std::string & password)
+                                const std::string & password)
 {
-    _auth.setLogin(login);
-    _auth.setPassword(password);
+    m_auth.setLogin(login);
+    m_auth.setPassword(password);
 }
 
-void Connection::_handleResolve(const boost::system::error_code & error,
-                                tcp::resolver::iterator it)
+void Connection::m_handleResolve(const boost::system::error_code & error,
+                                 tcp::resolver::iterator it)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     if (!error) {
         if (it != tcp::resolver::iterator()) {
-            _socket.async_connect(
+            m_socket.async_connect(
                 *it,
                 boost::bind(
-                    &Connection::_handleConnect,
+                    &Connection::m_handleConnect,
                     this,
                     placeholders::error,
                     it
                 )
             );
         } else {
-            if (!_errorCallback.empty())
-                _errorCallback(
+            if (!m_errorCallback.empty())
+                m_errorCallback(
                     boost::system::error_code(
                         resolveError,
                         CasterCategory::getInstance()
                     )
                 );
-            _shutdown();
+            m_shutdown();
         }
     } else {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_handleConnect(const boost::system::error_code & error,
-                                tcp::resolver::iterator it)
+void Connection::m_handleConnect(const boost::system::error_code & error,
+                                 tcp::resolver::iterator it)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     if (!error) {
-        _prepareRequest();
+        m_prepareRequest();
         async_write(
-            _socket,
-            _request,
+            m_socket,
+            m_request,
             transfer_all(),
             boost::bind(
-                &Connection::_handleWriteRequest,
+                &Connection::m_handleWriteRequest,
                 this,
                 placeholders::error
             )
@@ -156,62 +156,62 @@ void Connection::_handleConnect(const boost::system::error_code & error,
     } else {
         ++it;
         if (it != tcp::resolver::iterator()) {
-            _socket.async_connect(
+            m_socket.async_connect(
                 *it,
                 boost::bind(
-                    &Connection::_handleConnect,
+                    &Connection::m_handleConnect,
                     this,
                     placeholders::error,
                     it
                 )
             );
         } else {
-            if (!_errorCallback.empty())
-                _errorCallback(error);
-            _shutdown();
+            if (!m_errorCallback.empty())
+                m_errorCallback(error);
+            m_shutdown();
         }
     }
 }
 
-void Connection::_handleWriteRequest(const boost::system::error_code & error)
+void Connection::m_handleWriteRequest(const boost::system::error_code & error)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     if (!error) {
         async_read_until(
-            _socket,
-            _response,
+            m_socket,
+            m_response,
             "\r\n",
             boost::bind(
-                &Connection::_handleReadStatus,
+                &Connection::m_handleReadStatus,
                 this,
                 placeholders::error
             )
         );
     } else if (error != error::operation_aborted) {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_handleWriteData(const boost::system::error_code & error)
+void Connection::m_handleWriteData(const boost::system::error_code & error)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     if (error && error != error::operation_aborted) {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_handleReadStatus(const boost::system::error_code & error)
+void Connection::m_handleReadStatus(const boost::system::error_code & error)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     if (!error) {
-        std::istream statusStream(&_response);
+        std::istream statusStream(&m_response);
         std::string proto;
         statusStream >> proto;
         unsigned code;
@@ -221,253 +221,253 @@ void Connection::_handleReadStatus(const boost::system::error_code & error)
         if (code != 200) {
             ERRLOG(logError) << "Invalid status string:\n"
                           << proto << " " << code << " " << message;
-            if (!_errorCallback.empty())
-                _errorCallback(
+            if (!m_errorCallback.empty())
+                m_errorCallback(
                     boost::system::error_code(
                         invalidStatus,
                         CasterCategory::getInstance()
                     )
                 );
-            _shutdown();
+            m_shutdown();
             return;
         }
         if (proto == "ICY") {
-            _active = true;
+            m_active = true;
             async_read(
-                _socket,
-                _response,
+                m_socket,
+                m_response,
                 boost::bind(
-                    &Connection::_handleReadData,
+                    &Connection::m_handleReadData,
                     this,
                     placeholders::error
                 )
             );
         } else {
             async_read_until(
-                _socket,
-                _response,
+                m_socket,
+                m_response,
                 "\r\n\r\n",
                 boost::bind(
-                    &Connection::_handleReadHeaders,
+                    &Connection::m_handleReadHeaders,
                     this,
                     placeholders::error
                 )
             );
         }
     } else if (error != error::operation_aborted) {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_handleReadHeaders(const boost::system::error_code & error)
+void Connection::m_handleReadHeaders(const boost::system::error_code & error)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     if (!error) {
-        std::istream headersStream(&_response);
+        std::istream headersStream(&m_response);
         std::string header;
         while (std::getline(headersStream, header) && header != "\r") {
             const StringPair pair(trimStringPair(splitString(header, ':')));
-            _headers.insert(pair);
+            m_headers.insert(pair);
             if (pair.first == "Transfer-Encoding" &&
                 pair.second == "chunked") {
                 ERRLOG(logDebug) << "Transfer-Encoding: chunked";
-                _chunked = true;
+                m_chunked = true;
             }
         }
-        if (!_headersCallback.empty())
-            _headersCallback();
-        _active = true;
-        if (_chunked) {
+        if (!m_headersCallback.empty())
+            m_headersCallback();
+        m_active = true;
+        if (m_chunked) {
             async_read_until(
-                _socket,
-                _response,
+                m_socket,
+                m_response,
                 "\r\n",
                 boost::bind(
-                    &Connection::_handleReadChunkLength,
+                    &Connection::m_handleReadChunkLength,
                     this,
                     placeholders::error
                 )
             );
         } else {
             async_read(
-                _socket,
-                _response,
+                m_socket,
+                m_response,
                 boost::bind(
-                    &Connection::_handleReadData,
+                    &Connection::m_handleReadData,
                     this,
                     placeholders::error
                 )
             );
         }
     } else if (error != error::operation_aborted) {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_handleReadData(const boost::system::error_code & error)
+void Connection::m_handleReadData(const boost::system::error_code & error)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
 
-    if (_response.size()) {
-        if (!_dataCallback.empty())
-            _dataCallback(_response.data());
-        _response.consume(_response.size());
+    if (m_response.size()) {
+        if (!m_dataCallback.empty())
+            m_dataCallback(m_response.data());
+        m_response.consume(m_response.size());
     }
 
     if (!error) {
         async_read(
-            _socket,
-            _response,
+            m_socket,
+            m_response,
             transfer_at_least(1),
             boost::bind(
-                &Connection::_handleReadData,
+                &Connection::m_handleReadData,
                 this,
                 placeholders::error
             )
         );
     } else if (error == error::eof) {
-        if (!_eofCallback.empty())
-            _eofCallback();
-        _shutdown();
+        if (!m_eofCallback.empty())
+            m_eofCallback();
+        m_shutdown();
     } else if (error != error::operation_aborted) {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_handleReadChunkLength(const boost::system::error_code & error)
+void Connection::m_handleReadChunkLength(const boost::system::error_code & error)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
 
     if (!error) {
         size_t length = 0;
-        _response.consume(parseChunkLength(_response.data(), length));
+        m_response.consume(parseChunkLength(m_response.data(), length));
         if (length == 0) {
-            if (!_eofCallback.empty())
-                _eofCallback();
-            _shutdown();
+            if (!m_eofCallback.empty())
+                m_eofCallback();
+            m_shutdown();
         } else {
-            if (_response.size() < length + 2) {
+            if (m_response.size() < length + 2) {
                 async_read(
-                    _socket,
-                    _response,
-                    transfer_at_least(length + 2 - _response.size()),
+                    m_socket,
+                    m_response,
+                    transfer_at_least(length + 2 - m_response.size()),
                     boost::bind(
-                        &Connection::_handleReadChunkData,
+                        &Connection::m_handleReadChunkData,
                         this,
                         placeholders::error,
                         length
                     )
                 );
             } else {
-                _handleReadChunkData(boost::system::error_code(), length);
+                m_handleReadChunkData(boost::system::error_code(), length);
             }
         }
     } else if (error == error::eof) {
-        if (!_eofCallback.empty())
-            _eofCallback();
-        _shutdown();
+        if (!m_eofCallback.empty())
+            m_eofCallback();
+        m_shutdown();
     } else if (error != error::operation_aborted) {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_handleReadChunkData(const boost::system::error_code & error,
-                                      size_t size)
+void Connection::m_handleReadChunkData(const boost::system::error_code & error,
+                                       size_t size)
 {
-    if (_timeout)
-        _timeouter.expires_from_now(boost::posix_time::seconds(_timeout));
+    if (m_timeout)
+        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
 
     if (size > 0) {
-        if (size > _response.size()) {
-            if (!_dataCallback.empty())
-                _dataCallback(_response.data());
+        if (size > m_response.size()) {
+            if (!m_dataCallback.empty())
+                m_dataCallback(m_response.data());
         } else {
-            if (!_dataCallback.empty())
-                _dataCallback(buffer(_response.data(), size));
+            if (!m_dataCallback.empty())
+                m_dataCallback(buffer(m_response.data(), size));
         }
     }
     if (!error) {
-        if (size > _response.size()) {
-            const size_t remainder = size + 2 - _response.size();
-            _response.consume(_response.size());
+        if (size > m_response.size()) {
+            const size_t remainder = size + 2 - m_response.size();
+            m_response.consume(m_response.size());
             async_read(
-                _socket,
-                _response,
+                m_socket,
+                m_response,
                 transfer_at_least(remainder),
                 boost::bind(
-                    &Connection::_handleReadChunkData,
+                    &Connection::m_handleReadChunkData,
                     this,
                     placeholders::error,
                     remainder - 2
                 )
             );
         } else {
-            _response.consume(size + 2);
+            m_response.consume(size + 2);
             async_read_until(
-                _socket,
-                _response,
+                m_socket,
+                m_response,
                 "\r\n",
                 boost::bind(
-                    &Connection::_handleReadChunkLength,
+                    &Connection::m_handleReadChunkLength,
                     this,
                     placeholders::error
                 )
             );
         }
     } else if (error == error::eof) {
-        if (!_eofCallback.empty())
-            _eofCallback();
-        _shutdown();
+        if (!m_eofCallback.empty())
+            m_eofCallback();
+        m_shutdown();
     } else if (error != error::operation_aborted) {
-        if (!_errorCallback.empty())
-            _errorCallback(error);
-        _shutdown();
+        if (!m_errorCallback.empty())
+            m_errorCallback(error);
+        m_shutdown();
     }
 }
 
-void Connection::_shutdown()
+void Connection::m_shutdown()
 {
-    _active = false;
-    if (!_socket.is_open())
+    m_active = false;
+    if (!m_socket.is_open())
         return;
     boost::system::error_code ec;
-    _socket.shutdown(tcp::socket::shutdown_both, ec);
-    _socket.close(ec);
+    m_socket.shutdown(tcp::socket::shutdown_both, ec);
+    m_socket.close(ec);
 }
 
-void Connection::_handleTimeout()
+void Connection::m_handleTimeout()
 {
-    if (_socket.is_open()) {
+    if (m_socket.is_open()) {
         // Check whether the deadline has passed. We compare the deadline against
         // the current time since a new asynchronous operation may have moved the
         // deadline before this actor had a chance to run.
-        if (_timeouter.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
+        if (m_timeouter.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
             ERRLOG(logInfo) << "Connection timeout detected, shutting it down" << std::endl;
-            if (!_errorCallback.empty())
-                _errorCallback(
+            if (!m_errorCallback.empty())
+                m_errorCallback(
                     boost::system::error_code(
                         connectionTimeout,
                         CasterCategory::getInstance()
                     )
                 );
-            _shutdown();
+            m_shutdown();
             return;
         }
         // Reschedule timeout
-        _timeouter.async_wait(
+        m_timeouter.async_wait(
                 boost::bind(
-                    &Connection::_handleTimeout,
+                    &Connection::m_handleTimeout,
                     this
                 )
         );

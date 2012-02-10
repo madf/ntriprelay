@@ -20,46 +20,46 @@ class Settings {
 
         const Settings & operator=(const Settings & rvalue) throw();
         
-        bool isHelp() const throw() { return _isHelp; }
-        bool isVersion() const throw() { return _isVersion; }
-        bool isDebug() const throw() { return _isDebug; }
+        bool isHelp() const throw() { return m_isHelp; }
+        bool isVersion() const throw() { return m_isVersion; }
+        bool isDebug() const throw() { return m_isDebug; }
 
-        const std::string & sourceServer() const throw() { return _sourceServer; }
-        const std::string & sourceMountpoint() const throw() { return _sourceMountpoint; }
-        const std::string & sourceLogin() const throw() { return _sourceLogin; }
-        const std::string & sourcePassword() const throw() { return _sourcePassword; }
+        const std::string & sourceServer() const throw() { return m_sourceServer; }
+        const std::string & sourceMountpoint() const throw() { return m_sourceMountpoint; }
+        const std::string & sourceLogin() const throw() { return m_sourceLogin; }
+        const std::string & sourcePassword() const throw() { return m_sourcePassword; }
 
-        const std::string & destinationServer() const throw() { return _destinationServer; }
-        const std::string & destinationMountpoint() const throw() { return _destinationMountpoint; }
-        const std::string & destinationLogin() const throw() { return _destinationLogin; }
-        const std::string & destinationPassword() const throw() { return _destinationPassword; }
+        const std::string & destinationServer() const throw() { return m_destinationServer; }
+        const std::string & destinationMountpoint() const throw() { return m_destinationMountpoint; }
+        const std::string & destinationLogin() const throw() { return m_destinationLogin; }
+        const std::string & destinationPassword() const throw() { return m_destinationPassword; }
 
-        const std::string & gga() const throw() { return _gga; }
+        const std::string & gga() const throw() { return m_gga; }
 
-        int verbosity() const throw() { return _verbosity; }
-        uint16_t destinationPort() const throw() { return _destinationPort; }
-        uint16_t sourcePort() const throw() { return _sourcePort; }
-        unsigned connectionTimeout() const throw() { return _connectionTimeout; }
+        int verbosity() const throw() { return m_verbosity; }
+        uint16_t destinationPort() const throw() { return m_destinationPort; }
+        uint16_t sourcePort() const throw() { return m_sourcePort; }
+        unsigned connectionTimeout() const throw() { return m_connectionTimeout; }
 
     private:
-        bool _isHelp;
-        bool _isVersion;
-        bool _isDebug;
+        bool m_isHelp;
+        bool m_isVersion;
+        bool m_isDebug;
 
-        std::string _sourceServer;
-        std::string _sourceMountpoint;
-        std::string _sourceLogin;
-        std::string _sourcePassword;
-        uint16_t _sourcePort;
-        std::string _destinationServer;
-        std::string _destinationMountpoint;
-        std::string _destinationLogin;
-        std::string _destinationPassword;
-        uint16_t _destinationPort;
-        std::string _gga;
+        std::string m_sourceServer;
+        std::string m_sourceMountpoint;
+        std::string m_sourceLogin;
+        std::string m_sourcePassword;
+        uint16_t m_sourcePort;
+        std::string m_destinationServer;
+        std::string m_destinationMountpoint;
+        std::string m_destinationLogin;
+        std::string m_destinationPassword;
+        uint16_t m_destinationPort;
+        std::string m_gga;
 
-        int _verbosity;
-        unsigned _connectionTimeout;
+        int m_verbosity;
+        unsigned m_connectionTimeout;
 
         friend class SettingsParser;
 };
@@ -72,10 +72,10 @@ class SettingsParser : private boost::noncopyable {
         void init(int argc, char * argv[]);
         void printHelp() const throw();
 
-        const Settings & settings() const throw() { return _settings; }
+        const Settings & settings() const throw() { return m_settings; }
     private:
-        po::options_description _desc;
-        Settings _settings;
+        po::options_description m_desc;
+        Settings m_settings;
 };
 
 }

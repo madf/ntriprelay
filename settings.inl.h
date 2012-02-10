@@ -7,43 +7,43 @@ namespace Caster {
 
 inline
 Settings::Settings() throw()
-    : _isHelp(true),
-      _isVersion(false),
-      _isDebug(false),
-      _sourceServer(),
-      _sourceMountpoint(),
-      _sourceLogin(),
-      _sourcePassword(),
-      _sourcePort(2101),
-      _destinationServer(),
-      _destinationMountpoint(),
-      _destinationLogin(),
-      _destinationPassword(),
-      _destinationPort(2101),
-      _gga(),
-      _verbosity(1),
-      _connectionTimeout(120)
+    : m_isHelp(true),
+      m_isVersion(false),
+      m_isDebug(false),
+      m_sourceServer(),
+      m_sourceMountpoint(),
+      m_sourceLogin(),
+      m_sourcePassword(),
+      m_sourcePort(2101),
+      m_destinationServer(),
+      m_destinationMountpoint(),
+      m_destinationLogin(),
+      m_destinationPassword(),
+      m_destinationPort(2101),
+      m_gga(),
+      m_verbosity(1),
+      m_connectionTimeout(120)
 {
 }
 
 inline
 Settings::Settings(const Settings & rvalue) throw()
-    : _isHelp(rvalue._isHelp),
-      _isVersion(rvalue._isVersion),
-      _isDebug(rvalue._isDebug),
-      _sourceServer(rvalue._sourceServer),
-      _sourceMountpoint(rvalue._sourceMountpoint),
-      _sourceLogin(rvalue._sourceLogin),
-      _sourcePassword(rvalue._sourcePassword),
-      _sourcePort(rvalue._sourcePort),
-      _destinationServer(rvalue._destinationServer),
-      _destinationMountpoint(rvalue._destinationMountpoint),
-      _destinationLogin(rvalue._destinationLogin),
-      _destinationPassword(rvalue._destinationPassword),
-      _destinationPort(rvalue._destinationPort),
-      _gga(rvalue._gga),
-      _verbosity(rvalue._verbosity),
-      _connectionTimeout(rvalue._connectionTimeout)
+    : m_isHelp(rvalue.m_isHelp),
+      m_isVersion(rvalue.m_isVersion),
+      m_isDebug(rvalue.m_isDebug),
+      m_sourceServer(rvalue.m_sourceServer),
+      m_sourceMountpoint(rvalue.m_sourceMountpoint),
+      m_sourceLogin(rvalue.m_sourceLogin),
+      m_sourcePassword(rvalue.m_sourcePassword),
+      m_sourcePort(rvalue.m_sourcePort),
+      m_destinationServer(rvalue.m_destinationServer),
+      m_destinationMountpoint(rvalue.m_destinationMountpoint),
+      m_destinationLogin(rvalue.m_destinationLogin),
+      m_destinationPassword(rvalue.m_destinationPassword),
+      m_destinationPort(rvalue.m_destinationPort),
+      m_gga(rvalue.m_gga),
+      m_verbosity(rvalue.m_verbosity),
+      m_connectionTimeout(rvalue.m_connectionTimeout)
 {
 }
 
@@ -55,30 +55,30 @@ Settings::~Settings() throw()
 inline
 const Settings & Settings::operator=(const Settings & rvalue) throw()
 {
-    _isHelp = rvalue._isHelp;
-    _isVersion = rvalue._isVersion;
-    _isDebug = rvalue._isDebug;
-    _sourceServer = rvalue._sourceServer;
-    _sourceMountpoint = rvalue._sourceMountpoint;
-    _sourceLogin = rvalue._sourceLogin;
-    _sourcePassword = rvalue._sourcePassword;
-    _sourcePort = rvalue._sourcePort;
-    _destinationServer = rvalue._destinationServer;
-    _destinationMountpoint = rvalue._destinationMountpoint;
-    _destinationLogin = rvalue._destinationLogin;
-    _destinationPassword = rvalue._destinationPassword;
-    _destinationPort = rvalue._destinationPort;
-    _gga = rvalue._gga;
-    _verbosity = rvalue._verbosity;
-    _connectionTimeout = rvalue._connectionTimeout;
+    m_isHelp = rvalue.m_isHelp;
+    m_isVersion = rvalue.m_isVersion;
+    m_isDebug = rvalue.m_isDebug;
+    m_sourceServer = rvalue.m_sourceServer;
+    m_sourceMountpoint = rvalue.m_sourceMountpoint;
+    m_sourceLogin = rvalue.m_sourceLogin;
+    m_sourcePassword = rvalue.m_sourcePassword;
+    m_sourcePort = rvalue.m_sourcePort;
+    m_destinationServer = rvalue.m_destinationServer;
+    m_destinationMountpoint = rvalue.m_destinationMountpoint;
+    m_destinationLogin = rvalue.m_destinationLogin;
+    m_destinationPassword = rvalue.m_destinationPassword;
+    m_destinationPort = rvalue.m_destinationPort;
+    m_gga = rvalue.m_gga;
+    m_verbosity = rvalue.m_verbosity;
+    m_connectionTimeout = rvalue.m_connectionTimeout;
     return *this;
 }
 
 inline
 SettingsParser::SettingsParser() throw()
-    : _desc("Allowed options")
+    : m_desc("Allowed options")
 {
-    _desc.add_options()
+    m_desc.add_options()
         ("help,h", "produce this help message")
         ("debug,d", "NTRIP clinet debugging")
         ("gga,g", po::value<std::string>(), "GPGGA string")
@@ -106,7 +106,7 @@ SettingsParser::~SettingsParser() throw()
 inline
 void SettingsParser::printHelp() const throw()
 {
-    std::cout << _desc << std::endl;
+    std::cout << m_desc << std::endl;
 }
 
 }
