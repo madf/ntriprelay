@@ -27,39 +27,39 @@ class Relay : public boost::enable_shared_from_this<Relay>,
         ~Relay();
 
         void start()
-        { _initCallbacks(); _client.start(); _server.start(); }
+        { m_initCallbacks(); m_client.start(); m_server.start(); }
         void start(unsigned timeout)
         {
-            _initCallbacks();
-            _client.start(timeout);
-            _server.start(timeout);
+            m_initCallbacks();
+            m_client.start(timeout);
+            m_server.start(timeout);
         }
 
-        void setGGA(const std::string & gga) { _client.setGGA(gga); }
+        void setGGA(const std::string & gga) { m_client.setGGA(gga); }
         void setSrcCredentials(const std::string & login,
                                const std::string & password)
-        { _client.setCredentials(login, password); }
+        { m_client.setCredentials(login, password); }
         void setDstCredentials(const std::string & login,
                                const std::string & password)
-        { _server.setCredentials(login, password); }
+        { m_server.setCredentials(login, password); }
 
-        void setErrorCallback(const ErrorCallback & cb) { _errorCallback = cb; }
-        void setEOFCallback(const EOFCallback & cb) { _eofCallback = cb; }
-        void setHeadersCallback(const HeadersCallback & cb) { _client.setHeadersCallback(cb); }
+        void setErrorCallback(const ErrorCallback & cb) { m_errorCallback = cb; }
+        void setEOFCallback(const EOFCallback & cb) { m_eofCallback = cb; }
+        void setHeadersCallback(const HeadersCallback & cb) { m_client.setHeadersCallback(cb); }
 
-        const std::map<std::string, std::string> & headers() const { return _client.headers(); }
+        const std::map<std::string, std::string> & headers() const { return m_client.headers(); }
 
     private:
-        Client _client;
-        Server _server;
-        ErrorCallback _errorCallback;
-        EOFCallback _eofCallback;
+        Client m_client;
+        Server m_server;
+        ErrorCallback m_errorCallback;
+        EOFCallback m_eofCallback;
 
-        void _initCallbacks();
-        void _clearCallbacks();
-        void _handleError(const boost::system::error_code & code);
-        void _handleData(const boost::asio::const_buffers_1 & buffers);
-        void _handleEOF();
+        void m_initCallbacks();
+        void m_clearCallbacks();
+        void m_handleError(const boost::system::error_code & code);
+        void m_handleData(const boost::asio::const_buffers_1 & buffers);
+        void m_handleEOF();
 };
 
 typedef boost::shared_ptr<Relay> RelayPtr;

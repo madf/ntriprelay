@@ -9,10 +9,10 @@ Relay::Relay(boost::asio::io_service & ioService,
              const std::string & srcMountpoint,
              const std::string & dstServer, uint16_t dstPort,
              const std::string & dstMountpoint)
-    : _client(ioService, srcServer, srcPort, srcMountpoint),
-      _server(ioService, dstServer, dstPort, dstMountpoint),
-      _errorCallback(),
-      _eofCallback()
+    : m_client(ioService, srcServer, srcPort, srcMountpoint),
+      m_server(ioService, dstServer, dstPort, dstMountpoint),
+      m_errorCallback(),
+      m_eofCallback()
 {
 }
 
@@ -20,65 +20,65 @@ Relay::~Relay()
 {
 }
 
-void Relay::_initCallbacks()
+void Relay::m_initCallbacks()
 {
-    _client.setErrorCallback(
+    m_client.setErrorCallback(
         boost::bind(
-            &Relay::_handleError,
+            &Relay::m_handleError,
             shared_from_this(),
             _1
         )
     );
-    _client.setDataCallback(
+    m_client.setDataCallback(
         boost::bind(
-            &Relay::_handleData,
+            &Relay::m_handleData,
             shared_from_this(),
             _1
         )
     );
-    _client.setEOFCallback(
+    m_client.setEOFCallback(
         boost::bind(
-            &Relay::_handleEOF,
+            &Relay::m_handleEOF,
             shared_from_this()
         )
     );
-    _server.setErrorCallback(
+    m_server.setErrorCallback(
         boost::bind(
-            &Relay::_handleError,
+            &Relay::m_handleError,
             shared_from_this(),
             _1
         )
     );
 }
 
-void Relay::_clearCallbacks()
+void Relay::m_clearCallbacks()
 {
-    _client.resetErrorCallback();
-    _client.resetDataCallback();
-    _client.resetEOFCallback();
-    _server.resetErrorCallback();
+    m_client.resetErrorCallback();
+    m_client.resetDataCallback();
+    m_client.resetEOFCallback();
+    m_server.resetErrorCallback();
 }
 
-void Relay::_handleError(const boost::system::error_code & ec)
+void Relay::m_handleError(const boost::system::error_code & ec)
 {
-    if (!_errorCallback.empty())
-        _errorCallback(ec);
-    _clearCallbacks();
-    _client.stop();
-    _server.stop();
+    if (!m_errorCallback.empty())
+        m_errorCallback(ec);
+    m_clearCallbacks();
+    m_client.stop();
+    m_server.stop();
 }
 
-void Relay::_handleData(const boost::asio::const_buffers_1 & buffers)
+void Relay::m_handleData(const boost::asio::const_buffers_1 & buffers)
 {
-    if (_server.isActive())
-        _server.send(buffers);
+    if (m_server.isActive())
+        m_server.send(buffers);
 }
 
-void Relay::_handleEOF()
+void Relay::m_handleEOF()
 {
-    if (!_eofCallback.empty())
-        _eofCallback();
-    _clearCallbacks();
-    _client.stop();
-    _server.stop();
+    if (!m_eofCallback.empty())
+        m_eofCallback();
+    m_clearCallbacks();
+    m_client.stop();
+    m_server.stop();
 }
