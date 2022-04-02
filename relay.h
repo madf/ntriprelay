@@ -8,11 +8,11 @@
 #include <boost/noncopyable.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/asio.hpp>
-#include <boost/cstdint.hpp>
 
 #include <memory>
 #include <string>
 #include <map>
+#include <cstdint>
 
 namespace Caster {
 

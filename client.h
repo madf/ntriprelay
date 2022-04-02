@@ -5,10 +5,10 @@
 #include "connection.h"
 
 #include <boost/asio.hpp>
-#include <boost/cstdint.hpp>
 
 #include <string>
 #include <memory>
+#include <cstdint>
 
 namespace Caster {
 

@@ -6,12 +6,12 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/asio.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/bind.hpp>
 
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdint>
 
 using boost::asio::ip::tcp;
 

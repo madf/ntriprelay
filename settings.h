@@ -3,9 +3,9 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/program_options.hpp>
-#include <boost/cstdint.hpp>
 
 #include <string>
+#include <cstdint>
 
 namespace po = boost::program_options;
 
