@@ -3,16 +3,15 @@
 
 #include "connection.h"
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
 #include <string>
+#include <memory>
 
 namespace Caster {
 
-class Server : public boost::enable_shared_from_this<Server>,
+class Server : public std::enable_shared_from_this<Server>,
                private Connection {
     public:
         Server(boost::asio::io_service& ioService,
@@ -32,7 +31,7 @@ class Server : public boost::enable_shared_from_this<Server>,
         void m_prepareRequest() override;
 };
 
-typedef boost::shared_ptr<Server> ServerPtr;
+using ServerPtr = std::shared_ptr<Server>;
 
 }
 

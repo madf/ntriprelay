@@ -4,18 +4,17 @@
 #include "authenticator.h"
 #include "connection.h"
 
-#include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
 #include <string>
+#include <memory>
 
 namespace Caster {
 
 class NTRIPRequest;
 
-class Client : public boost::enable_shared_from_this<Client>,
+class Client : public std::enable_shared_from_this<Client>,
                public Connection {
     public:
         Client(boost::asio::io_service& ioService,
@@ -33,7 +32,7 @@ class Client : public boost::enable_shared_from_this<Client>,
         void m_prepareRequest() override;
 };
 
-typedef boost::shared_ptr<Client> ClientPtr;
+using ClientPtr = std::shared_ptr<Client>;
 
 }
 

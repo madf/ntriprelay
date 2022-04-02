@@ -6,18 +6,17 @@
 #include "callbacks.h"
 
 #include <boost/noncopyable.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/system/error_code.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
+#include <memory>
 #include <string>
 #include <map>
 
 namespace Caster {
 
-class Relay : public boost::enable_shared_from_this<Relay>,
+class Relay : public std::enable_shared_from_this<Relay>,
               private boost::noncopyable {
     public:
         Relay(boost::asio::io_service& ioService,
@@ -63,7 +62,7 @@ class Relay : public boost::enable_shared_from_this<Relay>,
         void m_handleEOF();
 };
 
-typedef boost::shared_ptr<Relay> RelayPtr;
+using RelayPtr = std::shared_ptr<Relay>;
 
 }
 
