@@ -14,9 +14,6 @@ class SettingsParser;
 class Settings {
     public:
         Settings() noexcept;
-        Settings(const Settings & rvalue) noexcept;
-
-        const Settings& operator=(const Settings & rvalue) noexcept;
 
         bool isHelp() const noexcept { return m_isHelp; }
         bool isVersion() const noexcept { return m_isVersion; }
@@ -77,7 +74,5 @@ class SettingsParser
 };
 
 }
-
-#include "settings.inl.h"
 
 #endif
