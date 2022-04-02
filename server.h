@@ -1,14 +1,14 @@
 #ifndef __CASTER_SERVER_H__
 #define __CASTER_SERVER_H__
 
-#include <string>
+#include "connection.h"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
-#include "connection.h"
+#include <string>
 
 namespace Caster {
 

@@ -1,10 +1,10 @@
-#include <boost/lexical_cast.hpp>
+#include "connection.h"
 
 #include "error.h"
 #include "logger.h"
 #include "utils.h"
 
-#include "connection.h"
+#include <boost/lexical_cast.hpp>
 
 #define ERRLOG(level) LOG(CerrWriter, level)
 

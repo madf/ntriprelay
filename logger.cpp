@@ -1,6 +1,6 @@
-#include "log_levels.h"
-
 #include "logger.h"
+
+#include "log_levels.h"
 
 using namespace MADF;
 

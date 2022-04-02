@@ -1,11 +1,11 @@
 #ifndef __CASTER_SETTINGS_H__
 #define __CASTER_SETTINGS_H__
 
-#include <string>
-
 #include <boost/noncopyable.hpp>
 #include <boost/program_options.hpp>
 #include <boost/cstdint.hpp>
+
+#include <string>
 
 namespace po = boost::program_options;
 

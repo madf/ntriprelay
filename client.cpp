@@ -1,8 +1,8 @@
-#include <iostream>
+#include "client.h"
 
 #include "version.h"
 
-#include "client.h"
+#include <iostream>
 
 using Caster::Client;
 using namespace boost::asio;

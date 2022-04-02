@@ -1,11 +1,11 @@
 #ifndef __LOGGER_H__
 #define __LOGGER_H__
 
-#include <ctime>
-#include <sstream>
-
 #include "log_writer.h"
 #include "log_levels.h"
+
+#include <sstream>
+#include <ctime>
 
 namespace MADF {
 

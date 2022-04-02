@@ -1,17 +1,17 @@
 #ifndef __CASTER_CONNECTION_H__
 #define __CASTER_CONNECTION_H__
 
-#include <string>
-#include <vector>
-#include <map>
+#include "authenticator.h"
+#include "callbacks.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/bind.hpp>
 
-#include "authenticator.h"
-#include "callbacks.h"
+#include <string>
+#include <vector>
+#include <map>
 
 using boost::asio::ip::tcp;
 

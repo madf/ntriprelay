@@ -1,16 +1,16 @@
+#include "relay.h"
+#include "logger.h"
+#include "settings.h"
+#include "version.h"
+#include "error.h"
+
+#include <boost/system/error_code.hpp>
+
 #include <csignal>
 #include <cerrno>
 #include <cstring>
 #include <iostream>
 #include <exception>
-
-#include <boost/system/error_code.hpp>
-
-#include "logger.h"
-#include "settings.h"
-#include "version.h"
-#include "error.h"
-#include "relay.h"
 
 #define ERRLOG(level) LOG(CerrWriter, level)
 

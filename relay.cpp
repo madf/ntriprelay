@@ -1,6 +1,6 @@
-#include <boost/bind.hpp>
-
 #include "relay.h"
+
+#include <boost/bind.hpp>
 
 using Caster::Relay;
 

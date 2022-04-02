@@ -1,9 +1,9 @@
 #ifndef __CASTER_ERROR_H__
 #define __CASTER_ERROR_H__
 
-#include <stdexcept>
-
 #include <boost/system/error_code.hpp>
+
+#include <stdexcept>
 
 namespace Caster {
 

@@ -7,8 +7,8 @@
 
 namespace Caster {
 
-typedef boost::function<void (const boost::system::error_code & code)> ErrorCallback;
-typedef boost::function<void (const boost::asio::const_buffers_1 & buffers)> DataCallback;
+typedef boost::function<void (const boost::system::error_code& code)> ErrorCallback;
+typedef boost::function<void (const boost::asio::const_buffers_1& buffers)> DataCallback;
 typedef boost::function<void ()> EOFCallback;
 typedef boost::function<void ()> HeadersCallback;
 

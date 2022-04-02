@@ -1,12 +1,12 @@
-#include <iostream>
+#include "server.h"
+
+#include "version.h"
 
 #include <boost/format.hpp>
 #include <boost/array.hpp>
 #include <boost/asio/buffer.hpp>
 
-#include "version.h"
-
-#include "server.h"
+#include <iostream>
 
 using Caster::Server;
 

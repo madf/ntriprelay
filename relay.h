@@ -1,8 +1,9 @@
 #ifndef __CASTER_RELAY_H__
 #define __CASTER_RELAY_H__
 
-#include <string>
-#include <map>
+#include "client.h"
+#include "server.h"
+#include "callbacks.h"
 
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -11,9 +12,8 @@
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
-#include "client.h"
-#include "server.h"
-#include "callbacks.h"
+#include <string>
+#include <map>
 
 namespace Caster {
 

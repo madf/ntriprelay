@@ -1,15 +1,15 @@
 #ifndef __CASTER_CLIENT_H__
 #define __CASTER_CLIENT_H__
 
-#include <string>
+#include "authenticator.h"
+#include "connection.h"
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/asio.hpp>
 #include <boost/cstdint.hpp>
 
-#include "authenticator.h"
-#include "connection.h"
+#include <string>
 
 namespace Caster {
 

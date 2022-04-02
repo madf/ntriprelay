@@ -1,9 +1,9 @@
-#include <stdexcept>
+#include "settings.h"
+#include "error.h"
 
 #include <boost/lexical_cast.hpp>
 
-#include "error.h"
-#include "settings.h"
+#include <stdexcept>
 
 using Caster::SettingsParser;
 
