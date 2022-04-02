@@ -5,7 +5,6 @@
 #include "server.h"
 #include "callbacks.h"
 
-#include <boost/noncopyable.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/asio.hpp>
 
@@ -16,15 +15,14 @@
 
 namespace Caster {
 
-class Relay : public std::enable_shared_from_this<Relay>,
-              private boost::noncopyable {
+class Relay : public std::enable_shared_from_this<Relay>
+{
     public:
         Relay(boost::asio::io_service& ioService,
               const std::string& srcServer, uint16_t srcPort,
               const std::string& srcMountpoint,
               const std::string& dstServer, uint16_t dstPort,
               const std::string& dstMountpoint);
-        ~Relay();
 
         void start()
         { m_initCallbacks(); m_client.start(); m_server.start(); }

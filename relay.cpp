@@ -18,10 +18,6 @@ Relay::Relay(boost::asio::io_service& ioService,
 {
 }
 
-Relay::~Relay()
-{
-}
-
 void Relay::m_initCallbacks()
 {
     m_client.setErrorCallback(

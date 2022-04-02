@@ -4,7 +4,6 @@
 #include "authenticator.h"
 #include "callbacks.h"
 
-#include <boost/noncopyable.hpp>
 #include <boost/asio.hpp>
 
 #include <string>
@@ -17,7 +16,8 @@ using boost::asio::ip::tcp;
 
 namespace Caster {
 
-class Connection : private boost::noncopyable {
+class Connection
+{
     public:
         Connection(boost::asio::io_service& ioService,
                    const std::string& server, uint16_t port);

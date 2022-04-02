@@ -1,7 +1,6 @@
 #ifndef __CASTER_SETTINGS_H__
 #define __CASTER_SETTINGS_H__
 
-#include <boost/noncopyable.hpp>
 #include <boost/program_options.hpp>
 
 #include <string>
@@ -64,7 +63,8 @@ class Settings {
         friend class SettingsParser;
 };
 
-class SettingsParser : private boost::noncopyable {
+class SettingsParser
+{
     public:
         SettingsParser() throw();
         ~SettingsParser() throw();
