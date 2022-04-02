@@ -7,7 +7,7 @@
 namespace Caster {
 
 inline
-Settings::Settings() throw()
+Settings::Settings() noexcept
     : m_isHelp(true),
       m_isVersion(false),
       m_isDebug(false),
@@ -28,7 +28,7 @@ Settings::Settings() throw()
 }
 
 inline
-Settings::Settings(const Settings& rvalue) throw()
+Settings::Settings(const Settings& rvalue) noexcept
     : m_isHelp(rvalue.m_isHelp),
       m_isVersion(rvalue.m_isVersion),
       m_isDebug(rvalue.m_isDebug),
@@ -49,12 +49,7 @@ Settings::Settings(const Settings& rvalue) throw()
 }
 
 inline
-Settings::~Settings() throw()
-{
-}
-
-inline
-const Settings& Settings::operator=(const Settings& rvalue) throw()
+const Settings& Settings::operator=(const Settings& rvalue) noexcept
 {
     m_isHelp = rvalue.m_isHelp;
     m_isVersion = rvalue.m_isVersion;
@@ -76,7 +71,7 @@ const Settings& Settings::operator=(const Settings& rvalue) throw()
 }
 
 inline
-SettingsParser::SettingsParser() throw()
+SettingsParser::SettingsParser() noexcept
     : m_desc("Allowed options")
 {
     m_desc.add_options()
@@ -100,12 +95,7 @@ SettingsParser::SettingsParser() throw()
 }
 
 inline
-SettingsParser::~SettingsParser() throw()
-{
-}
-
-inline
-void SettingsParser::printHelp() const throw()
+void SettingsParser::printHelp() const noexcept
 {
     std::cout << m_desc << std::endl;
 }

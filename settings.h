@@ -13,32 +13,31 @@ namespace Caster {
 class SettingsParser;
 class Settings {
     public:
-        Settings() throw();
-        Settings(const Settings & rvalue) throw();
-        ~Settings() throw();
+        Settings() noexcept;
+        Settings(const Settings & rvalue) noexcept;
 
-        const Settings& operator=(const Settings & rvalue) throw();
+        const Settings& operator=(const Settings & rvalue) noexcept;
 
-        bool isHelp() const throw() { return m_isHelp; }
-        bool isVersion() const throw() { return m_isVersion; }
-        bool isDebug() const throw() { return m_isDebug; }
+        bool isHelp() const noexcept { return m_isHelp; }
+        bool isVersion() const noexcept { return m_isVersion; }
+        bool isDebug() const noexcept { return m_isDebug; }
 
-        const std::string& sourceServer() const throw() { return m_sourceServer; }
-        const std::string& sourceMountpoint() const throw() { return m_sourceMountpoint; }
-        const std::string& sourceLogin() const throw() { return m_sourceLogin; }
-        const std::string& sourcePassword() const throw() { return m_sourcePassword; }
+        const std::string& sourceServer() const noexcept { return m_sourceServer; }
+        const std::string& sourceMountpoint() const noexcept { return m_sourceMountpoint; }
+        const std::string& sourceLogin() const noexcept { return m_sourceLogin; }
+        const std::string& sourcePassword() const noexcept { return m_sourcePassword; }
 
-        const std::string& destinationServer() const throw() { return m_destinationServer; }
-        const std::string& destinationMountpoint() const throw() { return m_destinationMountpoint; }
-        const std::string& destinationLogin() const throw() { return m_destinationLogin; }
-        const std::string& destinationPassword() const throw() { return m_destinationPassword; }
+        const std::string& destinationServer() const noexcept { return m_destinationServer; }
+        const std::string& destinationMountpoint() const noexcept { return m_destinationMountpoint; }
+        const std::string& destinationLogin() const noexcept { return m_destinationLogin; }
+        const std::string& destinationPassword() const noexcept { return m_destinationPassword; }
 
-        const std::string& gga() const throw() { return m_gga; }
+        const std::string& gga() const noexcept { return m_gga; }
 
-        int verbosity() const throw() { return m_verbosity; }
-        uint16_t destinationPort() const throw() { return m_destinationPort; }
-        uint16_t sourcePort() const throw() { return m_sourcePort; }
-        unsigned connectionTimeout() const throw() { return m_connectionTimeout; }
+        int verbosity() const noexcept { return m_verbosity; }
+        uint16_t destinationPort() const noexcept { return m_destinationPort; }
+        uint16_t sourcePort() const noexcept { return m_sourcePort; }
+        unsigned connectionTimeout() const noexcept { return m_connectionTimeout; }
 
     private:
         bool m_isHelp;
@@ -66,13 +65,12 @@ class Settings {
 class SettingsParser
 {
     public:
-        SettingsParser() throw();
-        ~SettingsParser() throw();
+        SettingsParser() noexcept;
 
         void init(int argc, char* argv[]);
-        void printHelp() const throw();
+        void printHelp() const noexcept;
 
-        const Settings& settings() const throw() { return m_settings; }
+        const Settings& settings() const noexcept { return m_settings; }
     private:
         po::options_description m_desc;
         Settings m_settings;
