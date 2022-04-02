@@ -20,11 +20,11 @@ namespace Caster {
 class Relay : public boost::enable_shared_from_this<Relay>,
               private boost::noncopyable {
     public:
-        Relay(boost::asio::io_service & ioService,
-              const std::string & srcServer, uint16_t srcPort,
-              const std::string & srcMountpoint,
-              const std::string & dstServer, uint16_t dstPort,
-              const std::string & dstMountpoint);
+        Relay(boost::asio::io_service& ioService,
+              const std::string& srcServer, uint16_t srcPort,
+              const std::string& srcMountpoint,
+              const std::string& dstServer, uint16_t dstPort,
+              const std::string& dstMountpoint);
         ~Relay();
 
         void start()
@@ -36,19 +36,19 @@ class Relay : public boost::enable_shared_from_this<Relay>,
             m_server.start(timeout);
         }
 
-        void setGGA(const std::string & gga) { m_client.setGGA(gga); }
-        void setSrcCredentials(const std::string & login,
-                               const std::string & password)
+        void setGGA(const std::string& gga) { m_client.setGGA(gga); }
+        void setSrcCredentials(const std::string& login,
+                               const std::string& password)
         { m_client.setCredentials(login, password); }
-        void setDstCredentials(const std::string & login,
-                               const std::string & password)
+        void setDstCredentials(const std::string& login,
+                               const std::string& password)
         { m_server.setCredentials(login, password); }
 
-        void setErrorCallback(const ErrorCallback & cb) { m_errorCallback = cb; }
-        void setEOFCallback(const EOFCallback & cb) { m_eofCallback = cb; }
-        void setHeadersCallback(const HeadersCallback & cb) { m_client.setHeadersCallback(cb); }
+        void setErrorCallback(const ErrorCallback& cb) { m_errorCallback = cb; }
+        void setEOFCallback(const EOFCallback& cb) { m_eofCallback = cb; }
+        void setHeadersCallback(const HeadersCallback& cb) { m_client.setHeadersCallback(cb); }
 
-        const std::map<std::string, std::string> & headers() const { return m_client.headers(); }
+        const std::map<std::string, std::string>& headers() const { return m_client.headers(); }
 
     private:
         Client m_client;
@@ -58,8 +58,8 @@ class Relay : public boost::enable_shared_from_this<Relay>,
 
         void m_initCallbacks();
         void m_clearCallbacks();
-        void m_handleError(const boost::system::error_code & code);
-        void m_handleData(const boost::asio::const_buffers_1 & buffers);
+        void m_handleError(const boost::system::error_code& code);
+        void m_handleData(const boost::asio::const_buffers_1& buffers);
         void m_handleEOF();
 };
 

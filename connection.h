@@ -19,12 +19,12 @@ namespace Caster {
 
 class Connection : private boost::noncopyable {
     public:
-        Connection(boost::asio::io_service & ioService,
-                   const std::string & server, uint16_t port);
+        Connection(boost::asio::io_service& ioService,
+                   const std::string& server, uint16_t port);
 
-        Connection(boost::asio::io_service & ioService,
-                   const std::string & server, uint16_t port,
-                   const std::string & mountpoint);
+        Connection(boost::asio::io_service& ioService,
+                   const std::string& server, uint16_t port,
+                   const std::string& mountpoint);
         virtual ~Connection() {}
 
         void start();
@@ -32,22 +32,22 @@ class Connection : private boost::noncopyable {
         void stop() { m_shutdown(); }
 
         template <typename ConstBufferSequence>
-        void send(const ConstBufferSequence & buffers);
+        void send(const ConstBufferSequence& buffers);
 
-        void setCredentials(const std::string & login,
-                            const std::string & password);
+        void setCredentials(const std::string& login,
+                            const std::string& password);
 
-        void setErrorCallback(const ErrorCallback & cb) { m_errorCallback = cb; }
-        void setDataCallback(const DataCallback & cb) { m_dataCallback = cb; }
-        void setEOFCallback(const EOFCallback & cb) { m_eofCallback = cb; }
-        void setHeadersCallback(const HeadersCallback & cb) { m_headersCallback = cb; }
+        void setErrorCallback(const ErrorCallback& cb) { m_errorCallback = cb; }
+        void setDataCallback(const DataCallback& cb) { m_dataCallback = cb; }
+        void setEOFCallback(const EOFCallback& cb) { m_eofCallback = cb; }
+        void setHeadersCallback(const HeadersCallback& cb) { m_headersCallback = cb; }
 
         void resetErrorCallback() { m_errorCallback.clear(); }
         void resetDataCallback() { m_dataCallback.clear(); }
         void resetEOFCallback() { m_eofCallback.clear(); }
         void resetHeadersCallback() { m_headersCallback.clear(); }
 
-        const std::map<std::string, std::string> & headers() const { return m_headers; }
+        const std::map<std::string, std::string>& headers() const { return m_headers; }
 
         bool isActive() const { return m_active; }
 
@@ -74,17 +74,17 @@ class Connection : private boost::noncopyable {
         bool m_chunked;
         bool m_active;
 
-        void m_handleResolve(const boost::system::error_code & error,
+        void m_handleResolve(const boost::system::error_code& error,
                              tcp::resolver::iterator it);
-        void m_handleConnect(const boost::system::error_code & error,
+        void m_handleConnect(const boost::system::error_code& error,
                              tcp::resolver::iterator it);
-        void m_handleWriteRequest(const boost::system::error_code & error);
-        void m_handleWriteData(const boost::system::error_code & error);
-        void m_handleReadStatus(const boost::system::error_code & error);
-        void m_handleReadHeaders(const boost::system::error_code & error);
-        void m_handleReadData(const boost::system::error_code & error);
-        void m_handleReadChunkLength(const boost::system::error_code & error);
-        void m_handleReadChunkData(const boost::system::error_code & error,
+        void m_handleWriteRequest(const boost::system::error_code& error);
+        void m_handleWriteData(const boost::system::error_code& error);
+        void m_handleReadStatus(const boost::system::error_code& error);
+        void m_handleReadHeaders(const boost::system::error_code& error);
+        void m_handleReadData(const boost::system::error_code& error);
+        void m_handleReadChunkLength(const boost::system::error_code& error);
+        void m_handleReadChunkData(const boost::system::error_code& error,
                                    size_t size);
         void m_handleTimeout();
         void m_shutdown();
@@ -92,7 +92,7 @@ class Connection : private boost::noncopyable {
 
 template <typename ConstBufferSequence>
 inline
-void Connection::send(const ConstBufferSequence & buffers)
+void Connection::send(const ConstBufferSequence& buffers)
 {
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));

@@ -19,7 +19,7 @@ class Logger {
                 Writer::write(m_stream.str(), m_messageLevel);
         }
 
-        std::ostream & stream() { return m_stream; }
+        std::ostream& stream() { return m_stream; }
 
         static void setLogLevel(LogLevel l) { m_logLevel = l; }
         static LogLevel getLogLevel() { return m_logLevel; }

@@ -7,11 +7,11 @@
 
 using Caster::SettingsParser;
 
-void SettingsParser::init(int argc, char * argv[])
+void SettingsParser::init(int argc, char* argv[])
 {
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, m_desc), vm);
-    po::notify(vm);    
+    po::notify(vm);
 
     m_settings.m_isHelp = vm.count("help");
     m_settings.m_isVersion = vm.count("version");

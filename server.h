@@ -15,9 +15,9 @@ namespace Caster {
 class Server : public boost::enable_shared_from_this<Server>,
                private Connection {
     public:
-        Server(boost::asio::io_service & ioService,
-               const std::string & server, uint16_t port,
-               const std::string mountpoint);
+        Server(boost::asio::io_service& ioService,
+               const std::string& server, uint16_t port,
+               const std::string& mountpoint);
 
         using Connection::start;
         using Connection::stop;
@@ -26,10 +26,10 @@ class Server : public boost::enable_shared_from_this<Server>,
         using Connection::resetErrorCallback;
         using Connection::isActive;
 
-        void send(const boost::asio::const_buffer & buffer);
+        void send(const boost::asio::const_buffer& buffer);
 
     private:
-        void m_prepareRequest();
+        void m_prepareRequest() override;
 };
 
 typedef boost::shared_ptr<Server> ServerPtr;

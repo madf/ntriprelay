@@ -28,7 +28,7 @@ Settings::Settings() throw()
 }
 
 inline
-Settings::Settings(const Settings & rvalue) throw()
+Settings::Settings(const Settings& rvalue) throw()
     : m_isHelp(rvalue.m_isHelp),
       m_isVersion(rvalue.m_isVersion),
       m_isDebug(rvalue.m_isDebug),
@@ -54,7 +54,7 @@ Settings::~Settings() throw()
 }
 
 inline
-const Settings & Settings::operator=(const Settings & rvalue) throw()
+const Settings& Settings::operator=(const Settings& rvalue) throw()
 {
     m_isHelp = rvalue.m_isHelp;
     m_isVersion = rvalue.m_isVersion;

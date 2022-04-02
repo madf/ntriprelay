@@ -4,11 +4,11 @@
 
 using Caster::Relay;
 
-Relay::Relay(boost::asio::io_service & ioService,
-             const std::string & srcServer, uint16_t srcPort,
-             const std::string & srcMountpoint,
-             const std::string & dstServer, uint16_t dstPort,
-             const std::string & dstMountpoint)
+Relay::Relay(boost::asio::io_service& ioService,
+             const std::string& srcServer, uint16_t srcPort,
+             const std::string& srcMountpoint,
+             const std::string& dstServer, uint16_t dstPort,
+             const std::string& dstMountpoint)
     : m_client(ioService, srcServer, srcPort, srcMountpoint),
       m_server(ioService, dstServer, dstPort, dstMountpoint),
       m_errorCallback(),
@@ -59,7 +59,7 @@ void Relay::m_clearCallbacks()
     m_server.resetErrorCallback();
 }
 
-void Relay::m_handleError(const boost::system::error_code & ec)
+void Relay::m_handleError(const boost::system::error_code& ec)
 {
     if (!m_errorCallback.empty())
         m_errorCallback(ec);
@@ -68,7 +68,7 @@ void Relay::m_handleError(const boost::system::error_code & ec)
     m_server.stop();
 }
 
-void Relay::m_handleData(const boost::asio::const_buffers_1 & buffers)
+void Relay::m_handleData(const boost::asio::const_buffers_1& buffers)
 {
     if (m_server.isActive())
         m_server.send(buffers);

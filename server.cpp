@@ -10,14 +10,14 @@
 
 using Caster::Server;
 
-Server::Server(boost::asio::io_service & ioService,
-               const std::string & server, uint16_t port,
-               const std::string mountpoint)
+Server::Server(boost::asio::io_service& ioService,
+               const std::string& server, uint16_t port,
+               const std::string& mountpoint)
     : Connection(ioService, server, port, mountpoint)
 {
 }
 
-void Server::send(const boost::asio::const_buffer & buffer)
+void Server::send(const boost::asio::const_buffer& buffer)
 {
     const std::string dataLength((boost::format("%|x|\r\n") % boost::asio::buffer_size(buffer)).str());
     const boost::array<boost::asio::const_buffer, 3> bufs = {{

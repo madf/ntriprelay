@@ -17,13 +17,13 @@ namespace {
 
 typedef std::pair<std::string, std::string> StringPair;
 
-StringPair splitString(const std::string & src, char delimiter);
-StringPair trimStringPair(const StringPair & pair);
+StringPair splitString(const std::string& src, char delimiter);
+StringPair trimStringPair(const StringPair& pair);
 
 }
 
-Connection::Connection(boost::asio::io_service & ioService,
-                       const std::string & server, uint16_t port)
+Connection::Connection(boost::asio::io_service& ioService,
+                       const std::string& server, uint16_t port)
     : m_server(server),
       m_port(port),
       m_uri("/"),
@@ -44,9 +44,9 @@ Connection::Connection(boost::asio::io_service & ioService,
 {
 }
 
-Connection::Connection(boost::asio::io_service & ioService,
-                       const std::string & server, uint16_t port,
-                       const std::string & mountpoint)
+Connection::Connection(boost::asio::io_service& ioService,
+                       const std::string& server, uint16_t port,
+                       const std::string& mountpoint)
     : m_server(server),
       m_port(port),
       m_uri(),
@@ -96,14 +96,14 @@ void Connection::start(unsigned timeout)
     );
 }
 
-void Connection::setCredentials(const std::string & login,
-                                const std::string & password)
+void Connection::setCredentials(const std::string& login,
+                                const std::string& password)
 {
     m_auth.setLogin(login);
     m_auth.setPassword(password);
 }
 
-void Connection::m_handleResolve(const boost::system::error_code & error,
+void Connection::m_handleResolve(const boost::system::error_code& error,
                                  tcp::resolver::iterator it)
 {
     if (m_timeout)
@@ -136,7 +136,7 @@ void Connection::m_handleResolve(const boost::system::error_code & error,
     }
 }
 
-void Connection::m_handleConnect(const boost::system::error_code & error,
+void Connection::m_handleConnect(const boost::system::error_code& error,
                                  tcp::resolver::iterator it)
 {
     if (m_timeout)
@@ -173,7 +173,7 @@ void Connection::m_handleConnect(const boost::system::error_code & error,
     }
 }
 
-void Connection::m_handleWriteRequest(const boost::system::error_code & error)
+void Connection::m_handleWriteRequest(const boost::system::error_code& error)
 {
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
@@ -195,7 +195,7 @@ void Connection::m_handleWriteRequest(const boost::system::error_code & error)
     }
 }
 
-void Connection::m_handleWriteData(const boost::system::error_code & error)
+void Connection::m_handleWriteData(const boost::system::error_code& error)
 {
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
@@ -206,7 +206,7 @@ void Connection::m_handleWriteData(const boost::system::error_code & error)
     }
 }
 
-void Connection::m_handleReadStatus(const boost::system::error_code & error)
+void Connection::m_handleReadStatus(const boost::system::error_code& error)
 {
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
@@ -261,7 +261,7 @@ void Connection::m_handleReadStatus(const boost::system::error_code & error)
     }
 }
 
-void Connection::m_handleReadHeaders(const boost::system::error_code & error)
+void Connection::m_handleReadHeaders(const boost::system::error_code& error)
 {
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
@@ -309,7 +309,7 @@ void Connection::m_handleReadHeaders(const boost::system::error_code & error)
     }
 }
 
-void Connection::m_handleReadData(const boost::system::error_code & error)
+void Connection::m_handleReadData(const boost::system::error_code& error)
 {
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
@@ -342,7 +342,7 @@ void Connection::m_handleReadData(const boost::system::error_code & error)
     }
 }
 
-void Connection::m_handleReadChunkLength(const boost::system::error_code & error)
+void Connection::m_handleReadChunkLength(const boost::system::error_code& error)
 {
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
@@ -382,7 +382,7 @@ void Connection::m_handleReadChunkLength(const boost::system::error_code & error
     }
 }
 
-void Connection::m_handleReadChunkData(const boost::system::error_code & error,
+void Connection::m_handleReadChunkData(const boost::system::error_code& error,
                                        size_t size)
 {
     if (m_timeout)
@@ -477,7 +477,7 @@ void Connection::m_handleTimeout()
 namespace {
 
 inline
-StringPair splitString(const std::string & src, const char delimiter)
+StringPair splitString(const std::string& src, const char delimiter)
 {
     const size_t pos = src.find_first_of(delimiter);
     if (pos != std::string::npos) {
@@ -488,7 +488,7 @@ StringPair splitString(const std::string & src, const char delimiter)
 }
 
 inline
-StringPair trimStringPair(const StringPair & pair)
+StringPair trimStringPair(const StringPair& pair)
 {
     const size_t lpos = pair.second.find_first_not_of(" \t");
     const size_t rpos = pair.second.find_last_not_of(" \t\r\n", std::string::npos, 4);

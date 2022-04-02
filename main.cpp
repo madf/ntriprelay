@@ -17,22 +17,22 @@
 using namespace MADF;
 using namespace Caster;
 
-void configureLogger(const SettingsParser & parser);
-void printError(const boost::system::error_code & code);
-void printHeaders(const RelayPtr relayPtr);
+void configureLogger(const SettingsParser& parser);
+void printError(const boost::system::error_code& code);
+void printHeaders(const RelayPtr& relayPtr);
 
-int main(int argc, char * argv[])
+int main(int argc, char* argv[])
 {
     SettingsParser sParser;
 
     try {
         sParser.init(argc, argv);
     }
-    catch (const CasterError & e) {
+    catch (const CasterError& e) {
         std::cerr << e.what() << std::endl;
         return -1;
     }
-    catch (const std::exception & e) {
+    catch (const std::exception& e) {
         std::cerr << "Fatal error!" << std::endl;
         std::cerr << e.what() << std::endl;
         return -1;
@@ -119,10 +119,10 @@ int main(int argc, char * argv[])
 
         ERRLOG(logDebug) << "Stopping...";
     }
-    catch (const CasterError & e) {
+    catch (const CasterError& e) {
         ERRLOG(logError) << "Relay error: " << e.what();
     }
-    catch (const std::exception & e) {
+    catch (const std::exception& e) {
         ERRLOG(logFatal) << "System error: " << e.what();
         return -1;
     }
@@ -130,7 +130,7 @@ int main(int argc, char * argv[])
     return 0;
 }
 
-void configureLogger(const SettingsParser & parser)
+void configureLogger(const SettingsParser& parser)
 {
     if (parser.settings().isDebug()) {
         switch (parser.settings().verbosity()) {
@@ -159,12 +159,12 @@ void configureLogger(const SettingsParser & parser)
     }
 }
 
-void printError(const boost::system::error_code & code)
+void printError(const boost::system::error_code& code)
 {
     ERRLOG(logError) << "Relay error: " << code.message();
 }
 
-void printHeaders(const RelayPtr relayPtr)
+void printHeaders(const RelayPtr& relayPtr)
 {
     std::map<std::string, std::string>::const_iterator it;
     for (it = relayPtr->headers().begin(); it != relayPtr->headers().end(); ++it) {

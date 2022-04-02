@@ -18,19 +18,19 @@ class NTRIPRequest;
 class Client : public boost::enable_shared_from_this<Client>,
                public Connection {
     public:
-        Client(boost::asio::io_service & ioService,
-               const std::string & server, uint16_t port);
+        Client(boost::asio::io_service& ioService,
+               const std::string& server, uint16_t port);
 
-        Client(boost::asio::io_service & ioService,
-               const std::string & server, uint16_t port,
-               const std::string & mountpoint);
+        Client(boost::asio::io_service& ioService,
+               const std::string& server, uint16_t port,
+               const std::string& mountpoint);
 
-        void setGGA(const std::string & gga) { m_gga = gga; }
+        void setGGA(const std::string& gga) { m_gga = gga; }
 
     private:
         std::string m_gga;
 
-        void m_prepareRequest();
+        void m_prepareRequest() override;
 };
 
 typedef boost::shared_ptr<Client> ClientPtr;

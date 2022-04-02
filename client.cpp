@@ -7,16 +7,16 @@
 using Caster::Client;
 using namespace boost::asio;
 
-Client::Client(io_service & ioService,
-               const std::string & server, uint16_t port)
+Client::Client(io_service& ioService,
+               const std::string& server, uint16_t port)
     : Connection(ioService, server, port),
       m_gga()
 {
 }
 
-Client::Client(io_service & ioService,
-               const std::string & server, uint16_t port,
-               const std::string & mountpoint)
+Client::Client(io_service& ioService,
+               const std::string& server, uint16_t port,
+               const std::string& mountpoint)
     : Connection(ioService, server, port, mountpoint),
       m_gga()
 {

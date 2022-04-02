@@ -15,17 +15,15 @@ enum {
     invalidChunkLength
 };
 
-class CasterError : public std::runtime_error {
-    public:
-        CasterError(const char * msg) : std::runtime_error(msg) {}
-        CasterError(const std::string & msg) : std::runtime_error(msg) {}
+struct CasterError : std::runtime_error {
+    explicit CasterError(const std::string& msg) noexcept : std::runtime_error(msg) {}
 };
 
 class CasterCategory : public boost::system::error_category
 {
     public:
-        const char * name() const BOOST_SYSTEM_NOEXCEPT { return "Caster"; }
-        std::string  message(int ev) const
+        const char* name() const BOOST_SYSTEM_NOEXCEPT { return "Caster"; }
+        std::string message(int ev) const
         {
             switch (ev) {
                 case success:
@@ -43,7 +41,7 @@ class CasterCategory : public boost::system::error_category
             };
         }
 
-        static CasterCategory & getInstance()
+        static CasterCategory& getInstance()
         {
             static CasterCategory category;
             return category;
