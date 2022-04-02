@@ -1,8 +1,10 @@
 #include "relay.h"
 
-#include <boost/bind.hpp>
+#include <functional> // std::bind
 
 using Caster::Relay;
+
+namespace pls = std::placeholders;
 
 Relay::Relay(boost::asio::io_service& ioService,
              const std::string& srcServer, uint16_t srcPort,
@@ -23,30 +25,30 @@ Relay::~Relay()
 void Relay::m_initCallbacks()
 {
     m_client.setErrorCallback(
-        boost::bind(
+        std::bind(
             &Relay::m_handleError,
             shared_from_this(),
-            _1
+            pls::_1
         )
     );
     m_client.setDataCallback(
-        boost::bind(
+        std::bind(
             &Relay::m_handleData,
             shared_from_this(),
-            _1
+            pls::_1
         )
     );
     m_client.setEOFCallback(
-        boost::bind(
+        std::bind(
             &Relay::m_handleEOF,
             shared_from_this()
         )
     );
     m_server.setErrorCallback(
-        boost::bind(
+        std::bind(
             &Relay::m_handleError,
             shared_from_this(),
-            _1
+            pls::_1
         )
     );
 }

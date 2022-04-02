@@ -6,11 +6,11 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
 
 #include <string>
 #include <vector>
 #include <map>
+#include <functional>
 #include <cstdint>
 
 using boost::asio::ip::tcp;
@@ -101,10 +101,10 @@ void Connection::send(const ConstBufferSequence& buffers)
         m_socket,
         buffers,
         boost::asio::transfer_all(),
-        boost::bind(
+        std::bind(
             &Connection::m_handleWriteData,
             this,
-            boost::asio::placeholders::error
+            std::placeholders::_1
         )
     );
 }

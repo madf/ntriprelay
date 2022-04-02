@@ -13,6 +13,8 @@ using Caster::Connection;
 using Caster::parseChunkLength;
 using namespace boost::asio;
 
+namespace pls = std::placeholders;
+
 namespace {
 
 typedef std::pair<std::string, std::string> StringPair;
@@ -74,11 +76,11 @@ void Connection::start()
     tcp::resolver::query query(m_server, boost::lexical_cast<std::string>(m_port));
     m_resolver.async_resolve(
             query,
-            boost::bind(
+            std::bind(
                 &Connection::m_handleResolve,
                 this,
-                placeholders::error,
-                placeholders::iterator
+                pls::_1,
+                pls::_2
             )
     );
 }
@@ -89,7 +91,7 @@ void Connection::start(unsigned timeout)
     start();
     m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     m_timeouter.async_wait(
-            boost::bind(
+            std::bind(
                 &Connection::m_handleTimeout,
                 this
             )
@@ -112,10 +114,10 @@ void Connection::m_handleResolve(const boost::system::error_code& error,
         if (it != tcp::resolver::iterator()) {
             m_socket.async_connect(
                 *it,
-                boost::bind(
+                std::bind(
                     &Connection::m_handleConnect,
                     this,
-                    placeholders::error,
+                    pls::_1,
                     it
                 )
             );
@@ -147,10 +149,10 @@ void Connection::m_handleConnect(const boost::system::error_code& error,
             m_socket,
             m_request,
             transfer_all(),
-            boost::bind(
+            std::bind(
                 &Connection::m_handleWriteRequest,
                 this,
-                placeholders::error
+                pls::_1
             )
         );
     } else {
@@ -158,10 +160,10 @@ void Connection::m_handleConnect(const boost::system::error_code& error,
         if (it != tcp::resolver::iterator()) {
             m_socket.async_connect(
                 *it,
-                boost::bind(
+                std::bind(
                     &Connection::m_handleConnect,
                     this,
-                    placeholders::error,
+                    pls::_1,
                     it
                 )
             );
@@ -182,10 +184,10 @@ void Connection::m_handleWriteRequest(const boost::system::error_code& error)
             m_socket,
             m_response,
             "\r\n",
-            boost::bind(
+            std::bind(
                 &Connection::m_handleReadStatus,
                 this,
-                placeholders::error
+                pls::_1
             )
         );
     } else if (error != error::operation_aborted) {
@@ -236,10 +238,10 @@ void Connection::m_handleReadStatus(const boost::system::error_code& error)
             async_read(
                 m_socket,
                 m_response,
-                boost::bind(
+                std::bind(
                     &Connection::m_handleReadData,
                     this,
-                    placeholders::error
+                    pls::_1
                 )
             );
         } else {
@@ -247,10 +249,10 @@ void Connection::m_handleReadStatus(const boost::system::error_code& error)
                 m_socket,
                 m_response,
                 "\r\n\r\n",
-                boost::bind(
+                std::bind(
                     &Connection::m_handleReadHeaders,
                     this,
-                    placeholders::error
+                    pls::_1
                 )
             );
         }
@@ -285,20 +287,20 @@ void Connection::m_handleReadHeaders(const boost::system::error_code& error)
                 m_socket,
                 m_response,
                 "\r\n",
-                boost::bind(
+                std::bind(
                     &Connection::m_handleReadChunkLength,
                     this,
-                    placeholders::error
+                    pls::_1
                 )
             );
         } else {
             async_read(
                 m_socket,
                 m_response,
-                boost::bind(
+                std::bind(
                     &Connection::m_handleReadData,
                     this,
-                    placeholders::error
+                    pls::_1
                 )
             );
         }
@@ -325,10 +327,10 @@ void Connection::m_handleReadData(const boost::system::error_code& error)
             m_socket,
             m_response,
             transfer_at_least(1),
-            boost::bind(
+            std::bind(
                 &Connection::m_handleReadData,
                 this,
-                placeholders::error
+                pls::_1
             )
         );
     } else if (error == error::eof) {
@@ -360,10 +362,10 @@ void Connection::m_handleReadChunkLength(const boost::system::error_code& error)
                     m_socket,
                     m_response,
                     transfer_at_least(length + 2 - m_response.size()),
-                    boost::bind(
+                    std::bind(
                         &Connection::m_handleReadChunkData,
                         this,
-                        placeholders::error,
+                        pls::_1,
                         length
                     )
                 );
@@ -405,10 +407,10 @@ void Connection::m_handleReadChunkData(const boost::system::error_code& error,
                 m_socket,
                 m_response,
                 transfer_at_least(remainder),
-                boost::bind(
+                std::bind(
                     &Connection::m_handleReadChunkData,
                     this,
-                    placeholders::error,
+                    pls::_1,
                     remainder - 2
                 )
             );
@@ -418,10 +420,10 @@ void Connection::m_handleReadChunkData(const boost::system::error_code& error,
                 m_socket,
                 m_response,
                 "\r\n",
-                boost::bind(
+                std::bind(
                     &Connection::m_handleReadChunkLength,
                     this,
-                    placeholders::error
+                    pls::_1
                 )
             );
         }
@@ -466,7 +468,7 @@ void Connection::m_handleTimeout()
         }
         // Reschedule timeout
         m_timeouter.async_wait(
-                boost::bind(
+                std::bind(
                     &Connection::m_handleTimeout,
                     this
                 )

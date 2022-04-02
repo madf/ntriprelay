@@ -6,11 +6,12 @@
 
 #include <boost/system/error_code.hpp>
 
+#include <iostream>
+#include <functional> // std::bind
+#include <exception>
 #include <csignal>
 #include <cerrno>
 #include <cstring>
-#include <iostream>
-#include <exception>
 
 #define ERRLOG(level) LOG(CerrWriter, level)
 
@@ -95,7 +96,7 @@ int main(int argc, char* argv[])
                               sParser.settings().destinationMountpoint()));
 
         relay->setErrorCallback(printError);
-        relay->setHeadersCallback(boost::bind(printHeaders, relay));
+        relay->setHeadersCallback(std::bind(printHeaders, relay));
         if (!sParser.settings().sourceLogin().empty() ||
             !sParser.settings().sourcePassword().empty()) {
             relay->setSrcCredentials(sParser.settings().sourceLogin(),
