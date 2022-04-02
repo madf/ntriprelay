@@ -2,6 +2,7 @@
 #define __CASTER_RELAY_H__
 
 #include <string>
+#include <map>
 
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>

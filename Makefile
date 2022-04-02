@@ -1,7 +1,7 @@
 INCS = 
 DEFS = 
 CFLAGS += -ggdb3 -W -Wall -Wextra $(INCS) $(DEFS)
-CXXFLAGS = $(CFLAGS) -std=c++0x
+CXXFLAGS = $(CFLAGS) -std=c++17
 LIBS = -lpthread -lboost_program_options -lboost_system
 PROG = nrel
 

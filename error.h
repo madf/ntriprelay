@@ -24,7 +24,7 @@ class CasterError : public std::runtime_error {
 class CasterCategory : public boost::system::error_category
 {
     public:
-        const char * name() const { return "Caster"; }
+        const char * name() const BOOST_SYSTEM_NOEXCEPT { return "Caster"; }
         std::string  message(int ev) const
         {
             switch (ev) {

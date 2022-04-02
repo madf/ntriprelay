@@ -2,6 +2,7 @@
 #define __CASTER_SETTINGS_INL_H__
 
 #include <sstream>
+#include <iostream>
 
 namespace Caster {
 

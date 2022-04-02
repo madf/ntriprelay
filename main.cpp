@@ -119,10 +119,10 @@ int main(int argc, char * argv[])
 
         ERRLOG(logDebug) << "Stopping...";
     }
-    catch (CasterError & e) {
+    catch (const CasterError & e) {
         ERRLOG(logError) << "Relay error: " << e.what();
     }
-    catch (std::exception & e) {
+    catch (const std::exception & e) {
         ERRLOG(logFatal) << "System error: " << e.what();
         return -1;
     }
