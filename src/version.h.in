@@ -1,0 +1,10 @@
+#pragma once
+
+#include <string>
+
+namespace Caster
+{
+
+const std::string version = "@CPACK_PACKAGE_VERSION@";
+
+}
