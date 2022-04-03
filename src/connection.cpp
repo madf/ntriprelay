@@ -65,7 +65,7 @@ void Connection::start()
             query,
             std::bind(
                 &Connection::m_handleResolve,
-                shared_from_this(),
+                this,
                 pls::_1,
                 pls::_2
             )
@@ -95,24 +95,17 @@ void Connection::m_handleResolve(const bs::error_code& error,
                 *it,
                 std::bind(
                     &Connection::m_handleConnect,
-                    shared_from_this(),
+                    this,
                     pls::_1,
                     it
                 )
             );
         } else {
-            if (m_errorCallback)
-                m_errorCallback(
-                    bs::error_code(
-                        resolveError,
-                        CasterCategory::getInstance()
-                    )
-                );
+            reportError(resolveError);
             m_shutdown();
         }
     } else {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -129,7 +122,7 @@ void Connection::m_handleConnect(const bs::error_code& error,
             ba::transfer_all(),
             std::bind(
                 &Connection::m_handleWriteRequest,
-                shared_from_this(),
+                this,
                 pls::_1
             )
         );
@@ -140,14 +133,13 @@ void Connection::m_handleConnect(const bs::error_code& error,
                 *it,
                 std::bind(
                     &Connection::m_handleConnect,
-                    shared_from_this(),
+                    this,
                     pls::_1,
                     it
                 )
             );
         } else {
-            if (m_errorCallback)
-                m_errorCallback(error);
+            reportError(error);
             m_shutdown();
         }
     }
@@ -163,13 +155,12 @@ void Connection::m_handleWriteRequest(const bs::error_code& error)
             "\r\n",
             std::bind(
                 &Connection::m_handleReadStatus,
-                shared_from_this(),
+                this,
                 pls::_1
             )
         );
     } else if (error != ba::error::operation_aborted) {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -178,8 +169,7 @@ void Connection::m_handleWriteData(const bs::error_code& error)
 {
     restartTimer();
     if (error && error != ba::error::operation_aborted) {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -198,13 +188,7 @@ void Connection::m_handleReadStatus(const bs::error_code& error)
         if (code != 200) {
             ERRLOG(logError) << "Invalid status string:\n"
                           << proto << " " << code << " " << message;
-            if (m_errorCallback)
-                m_errorCallback(
-                    bs::error_code(
-                        invalidStatus,
-                        CasterCategory::getInstance()
-                    )
-                );
+            reportError(invalidStatus);
             m_shutdown();
             return;
         }
@@ -215,7 +199,7 @@ void Connection::m_handleReadStatus(const bs::error_code& error)
                 m_response,
                 std::bind(
                     &Connection::m_handleReadData,
-                    shared_from_this(),
+                    this,
                     pls::_1
                 )
             );
@@ -226,14 +210,13 @@ void Connection::m_handleReadStatus(const bs::error_code& error)
                 "\r\n\r\n",
                 std::bind(
                     &Connection::m_handleReadHeaders,
-                    shared_from_this(),
+                    this,
                     pls::_1
                 )
             );
         }
     } else if (error != ba::error::operation_aborted) {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -263,7 +246,7 @@ void Connection::m_handleReadHeaders(const bs::error_code& error)
                 "\r\n",
                 std::bind(
                     &Connection::m_handleReadChunkLength,
-                    shared_from_this(),
+                    this,
                     pls::_1
                 )
             );
@@ -273,14 +256,13 @@ void Connection::m_handleReadHeaders(const bs::error_code& error)
                 m_response,
                 std::bind(
                     &Connection::m_handleReadData,
-                    shared_from_this(),
+                    this,
                     pls::_1
                 )
             );
         }
     } else if (error != ba::error::operation_aborted) {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -302,7 +284,7 @@ void Connection::m_handleReadData(const bs::error_code& error)
             ba::transfer_at_least(1),
             std::bind(
                 &Connection::m_handleReadData,
-                shared_from_this(),
+                this,
                 pls::_1
             )
         );
@@ -311,8 +293,7 @@ void Connection::m_handleReadData(const bs::error_code& error)
             m_eofCallback();
         m_shutdown();
     } else if (error != ba::error::operation_aborted) {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -336,7 +317,7 @@ void Connection::m_handleReadChunkLength(const bs::error_code& error)
                     ba::transfer_at_least(length + 2 - m_response.size()),
                     std::bind(
                         &Connection::m_handleReadChunkData,
-                        shared_from_this(),
+                        this,
                         pls::_1,
                         length
                     )
@@ -350,8 +331,7 @@ void Connection::m_handleReadChunkLength(const bs::error_code& error)
             m_eofCallback();
         m_shutdown();
     } else if (error != ba::error::operation_aborted) {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -380,7 +360,7 @@ void Connection::m_handleReadChunkData(const bs::error_code& error,
                 ba::transfer_at_least(remainder),
                 std::bind(
                     &Connection::m_handleReadChunkData,
-                    shared_from_this(),
+                    this,
                     pls::_1,
                     remainder - 2
                 )
@@ -393,7 +373,7 @@ void Connection::m_handleReadChunkData(const bs::error_code& error,
                 "\r\n",
                 std::bind(
                     &Connection::m_handleReadChunkLength,
-                    shared_from_this(),
+                    this,
                     pls::_1
                 )
             );
@@ -403,8 +383,7 @@ void Connection::m_handleReadChunkData(const bs::error_code& error,
             m_eofCallback();
         m_shutdown();
     } else if (error != ba::error::operation_aborted) {
-        if (m_errorCallback)
-            m_errorCallback(error);
+        reportError(error);
         m_shutdown();
     }
 }
@@ -430,16 +409,10 @@ void Connection::handleTimeout(const bs::error_code& ec)
     // the current time since a new asynchronous operation may have moved the
     // deadline before this actor had a chance to run.
     if (m_timeouter.expires_at() > ba::deadline_timer::traits_type::now())
-        m_timeouter.async_wait(std::bind(&Connection::handleTimeout, shared_from_this(), pls::_1));
+        m_timeouter.async_wait(std::bind(&Connection::handleTimeout, this, pls::_1));
 
     ERRLOG(logInfo) << "Connection timeout detected, shutting it down" << std::endl;
-    if (m_errorCallback)
-        m_errorCallback(
-            bs::error_code(
-                connectionTimeout,
-                CasterCategory::getInstance()
-            )
-        );
+    reportError(connectionTimeout);
     m_shutdown();
     return;
 }
@@ -450,7 +423,18 @@ void Connection::restartTimer()
         return;
 
     m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
-    m_timeouter.async_wait(std::bind(&Connection::handleTimeout, shared_from_this(), pls::_1));
+    m_timeouter.async_wait(std::bind(&Connection::handleTimeout, this, pls::_1));
+}
+
+void Connection::reportError(const bs::error_code& ec)
+{
+    if (m_errorCallback)
+        m_errorCallback(ec);
+}
+
+void Connection::reportError(int val)
+{
+    reportError(boost::system::error_code(val, CasterCategory::getInstance()));
 }
 
 namespace {

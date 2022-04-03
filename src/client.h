@@ -7,15 +7,13 @@
 #include <boost/asio.hpp>
 
 #include <string>
-#include <memory>
 #include <cstdint>
 
 namespace Caster {
 
 class NTRIPRequest;
 
-class Client : public std::enable_shared_from_this<Client>,
-               public Connection {
+class Client : public Connection {
     public:
         Client(boost::asio::io_service& ioService,
                const std::string& server, uint16_t port);

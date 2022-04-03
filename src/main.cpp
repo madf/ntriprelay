@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     }
 
     if (sParser.settings().isVersion()) {
-        std::cout << "Boost NTRIP Relay " << version << " (revision: " << revision << ")" << std::endl;
+        std::cout << "Boost NTRIP Relay " << version << std::endl;
         return 0;
     }
 

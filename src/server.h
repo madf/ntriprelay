@@ -6,13 +6,11 @@
 #include <boost/asio.hpp>
 
 #include <string>
-#include <memory>
 #include <cstdint>
 
 namespace Caster {
 
-class Server : public std::enable_shared_from_this<Server>,
-               private Connection {
+class Server : private Connection {
     public:
         Server(boost::asio::io_service& ioService,
                const std::string& server, uint16_t port,

@@ -9,13 +9,12 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <memory>
 #include <functional>
 #include <cstdint>
 
 namespace Caster {
 
-class Connection : std::enable_shared_from_this<Connection>
+class Connection
 {
     public:
         Connection(boost::asio::io_service& ioService,
@@ -91,6 +90,9 @@ class Connection : std::enable_shared_from_this<Connection>
 
         void restartTimer();
         void handleTimeout(const boost::system::error_code& ec);
+
+        void reportError(const boost::system::error_code& ec);
+        void reportError(int val);
 };
 
 template <typename ConstBufferSequence>
@@ -106,7 +108,7 @@ void Connection::send(const ConstBufferSequence& buffers)
         boost::asio::transfer_all(),
         std::bind(
             &Connection::m_handleWriteData,
-            shared_from_this(),
+            this,
             std::placeholders::_1
         )
     );
