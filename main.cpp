@@ -165,8 +165,6 @@ void printError(const boost::system::error_code& code)
 
 void printHeaders(const RelayPtr& relayPtr)
 {
-    std::map<std::string, std::string>::const_iterator it;
-    for (it = relayPtr->headers().begin(); it != relayPtr->headers().end(); ++it) {
-        ERRLOG(logInfo) << it->first << ": " << it->second;
-    }
+    for (const auto& kv : relayPtr->headers())
+        ERRLOG(logInfo) << kv.first << ": " << kv.second;
 }
