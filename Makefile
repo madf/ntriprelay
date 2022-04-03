@@ -29,9 +29,14 @@ clean:
 version.h: $(SOURCES) $(filter-out version.h,$(wildcard *.h))
 	@sed "s/@REVNO@/"`git describe`"/" version.h.in > version.h
 
+cppcheck:
+	cppcheck --enable=all --std=c++14 $(SOURCES)
+
 ifneq ($(MAKECMDGOALS),distclean)
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(MAKECMDGOALS),cppcheck)
 -include $(addsuffix .d,$(SOURCES))
+endif
 endif
 endif
 
