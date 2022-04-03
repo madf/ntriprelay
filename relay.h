@@ -26,6 +26,7 @@ class Relay : public std::enable_shared_from_this<Relay>
 
         void start()
         { m_initCallbacks(); m_client.start(); m_server.start(); }
+
         void start(unsigned timeout)
         {
             m_initCallbacks();

@@ -12,9 +12,7 @@ Relay::Relay(boost::asio::io_service& ioService,
              const std::string& dstServer, uint16_t dstPort,
              const std::string& dstMountpoint)
     : m_client(ioService, srcServer, srcPort, srcMountpoint),
-      m_server(ioService, dstServer, dstPort, dstMountpoint),
-      m_errorCallback(),
-      m_eofCallback()
+      m_server(ioService, dstServer, dstPort, dstMountpoint)
 {
 }
 

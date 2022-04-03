@@ -5,15 +5,13 @@
 using Caster::Authenticator;
 using Caster::CasterError;
 
-Authenticator::Authenticator()
-    : m_login(),
-      m_password(),
-      m_authenticated(false)
+Authenticator::Authenticator() noexcept
+    : m_authenticated(false)
 {
 }
 
 Authenticator::Authenticator(const std::string& login,
-                             const std::string& password)
+                             const std::string& password) noexcept
     : m_login(login),
       m_password(password),
       m_authenticated(true)
@@ -35,13 +33,13 @@ std::string Authenticator::digest(const std::string& /*method*/,
     throw CasterError("Digest authentication method is not implemented");
 }
 
-void Authenticator::setLogin(const std::string& login)
+void Authenticator::setLogin(const std::string& login) noexcept
 {
     m_login = login;
     m_authenticated = true;
 }
 
-void Authenticator::setPassword(const std::string& password)
+void Authenticator::setPassword(const std::string& password) noexcept
 {
     m_password = password;
     m_authenticated = true;

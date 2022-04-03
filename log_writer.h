@@ -11,33 +11,30 @@
 
 namespace MADF {
 
-class NullWriter {
-    public:
-        static void write(const std::string &, LogLevel) {}
+struct NullWriter {
+    static void write(const std::string&, LogLevel) {}
 };
 
-class CerrWriter {
-    public:
-        static void write(const std::string & message, LogLevel)
-        { std::cerr << message << std::endl; }
+struct CerrWriter {
+    static void write(const std::string& message, LogLevel)
+    { std::cerr << message << std::endl; }
 };
 
-class CoutWriter {
-    public:
-        static void write(const std::string & message, LogLevel)
-        { std::cout << message << std::endl; }
+struct CoutWriter {
+    static void write(const std::string& message, LogLevel)
+    { std::cout << message << std::endl; }
 };
 
-class FileWriter {
+struct FileWriter {
     public:
-        static bool open(const std::string & fileName,
+        static bool open(const std::string& fileName,
                          std::ios_base::openmode mode = std::ofstream::app)
         {
             m_stream.open(fileName.c_str(), mode);
             return m_stream.is_open();
         }
-        static void write(const std::string & message, LogLevel)
-        { 
+        static void write(const std::string& message, LogLevel)
+        {
             if (m_stream)
                 m_stream << message << std::endl;
         }

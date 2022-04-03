@@ -36,16 +36,14 @@ class Logger {
 template <>
 inline
 Logger<SysLogWriter>::Logger(LogLevel level)
-    : m_stream(),
-      m_messageLevel(level)
+    : m_messageLevel(level)
 {
 }
 
 template <class Writer>
 inline
 Logger<Writer>::Logger(LogLevel level)
-    : m_stream(),
-      m_messageLevel(level)
+    : m_messageLevel(level)
 {
     m_logTime();
 }

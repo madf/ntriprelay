@@ -17,7 +17,7 @@ namespace pls = std::placeholders;
 
 namespace {
 
-typedef std::pair<std::string, std::string> StringPair;
+using StringPair = std::pair<std::string, std::string>;
 
 StringPair splitString(const std::string& src, char delimiter);
 StringPair trimStringPair(const StringPair& pair);
@@ -29,18 +29,11 @@ Connection::Connection(boost::asio::io_service& ioService,
     : m_server(server),
       m_port(port),
       m_uri("/"),
-      m_auth(),
       m_timeout(0),
-      m_headers(),
       m_socket(ioService),
       m_timeouter(ioService),
-      m_request(),
       m_resolver(ioService),
       m_response(1024),
-      m_errorCallback(),
-      m_dataCallback(),
-      m_eofCallback(),
-      m_headersCallback(),
       m_chunked(false),
       m_active(false)
 {
@@ -51,18 +44,11 @@ Connection::Connection(boost::asio::io_service& ioService,
                        const std::string& mountpoint)
     : m_server(server),
       m_port(port),
-      m_uri(),
-      m_auth(),
       m_timeout(0),
-      m_headers(),
       m_socket(ioService),
       m_timeouter(ioService),
-      m_request(),
       m_resolver(ioService),
       m_response(1024),
-      m_errorCallback(),
-      m_dataCallback(),
-      m_eofCallback(),
       m_chunked(false),
       m_active(false)
 {

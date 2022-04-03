@@ -8,12 +8,12 @@ namespace Caster {
 
 class Authenticator {
     public:
-        Authenticator();
+        Authenticator() noexcept;
         Authenticator(const std::string& login,
-                      const std::string& password);
+                      const std::string& password) noexcept;
 
-        void setLogin(const std::string& login);
-        void setPassword(const std::string& password);
+        void setLogin(const std::string& login) noexcept;
+        void setPassword(const std::string& password) noexcept;
 
         std::string basic() const;
         std::string digest(const std::string& method,
@@ -22,7 +22,7 @@ class Authenticator {
                            uint8_t qop,
                            const std::string& nonce) const;
 
-        bool authenticated() const { return m_authenticated; }
+        bool authenticated() const noexcept { return m_authenticated; }
 
     private:
         std::string m_login;

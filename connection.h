@@ -25,7 +25,7 @@ class Connection
         Connection(boost::asio::io_service& ioService,
                    const std::string& server, uint16_t port,
                    const std::string& mountpoint);
-        virtual ~Connection() {}
+        virtual ~Connection() = default;
 
         void start();
         void start(unsigned timeout);
