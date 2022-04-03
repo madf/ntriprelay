@@ -82,8 +82,6 @@ int main(int argc, char* argv[])
     }
 
     try {
-        assert(!sParser.settings().sourceServer().empty() && "Source server must be specified!");
-        assert(!sParser.settings().destinationServer().empty() && "Destination server must be specified!");
         boost::asio::io_service ioService;
         RelayPtr relay;
 

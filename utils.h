@@ -13,8 +13,6 @@ inline
 size_t parseChunkLength(const boost::asio::const_buffers_1& buffers,
                         size_t& length)
 {
-    assert(buffers.begin() != buffers.end());
-
     namespace phoenix = boost::phoenix;
     namespace qi = boost::spirit::qi;
 
