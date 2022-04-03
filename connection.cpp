@@ -108,7 +108,7 @@ void Connection::m_handleResolve(const boost::system::error_code& error,
                 )
             );
         } else {
-            if (!m_errorCallback.empty())
+            if (m_errorCallback)
                 m_errorCallback(
                     boost::system::error_code(
                         resolveError,
@@ -118,7 +118,7 @@ void Connection::m_handleResolve(const boost::system::error_code& error,
             m_shutdown();
         }
     } else {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -154,7 +154,7 @@ void Connection::m_handleConnect(const boost::system::error_code& error,
                 )
             );
         } else {
-            if (!m_errorCallback.empty())
+            if (m_errorCallback)
                 m_errorCallback(error);
             m_shutdown();
         }
@@ -177,7 +177,7 @@ void Connection::m_handleWriteRequest(const boost::system::error_code& error)
             )
         );
     } else if (error != error::operation_aborted) {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -188,7 +188,7 @@ void Connection::m_handleWriteData(const boost::system::error_code& error)
     if (m_timeout)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
     if (error && error != error::operation_aborted) {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -209,7 +209,7 @@ void Connection::m_handleReadStatus(const boost::system::error_code& error)
         if (code != 200) {
             ERRLOG(logError) << "Invalid status string:\n"
                           << proto << " " << code << " " << message;
-            if (!m_errorCallback.empty())
+            if (m_errorCallback)
                 m_errorCallback(
                     boost::system::error_code(
                         invalidStatus,
@@ -243,7 +243,7 @@ void Connection::m_handleReadStatus(const boost::system::error_code& error)
             );
         }
     } else if (error != error::operation_aborted) {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -265,7 +265,7 @@ void Connection::m_handleReadHeaders(const boost::system::error_code& error)
                 m_chunked = true;
             }
         }
-        if (!m_headersCallback.empty())
+        if (m_headersCallback)
             m_headersCallback();
         m_active = true;
         if (m_chunked) {
@@ -291,7 +291,7 @@ void Connection::m_handleReadHeaders(const boost::system::error_code& error)
             );
         }
     } else if (error != error::operation_aborted) {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -303,7 +303,7 @@ void Connection::m_handleReadData(const boost::system::error_code& error)
         m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
 
     if (m_response.size()) {
-        if (!m_dataCallback.empty())
+        if (m_dataCallback)
             m_dataCallback(m_response.data());
         m_response.consume(m_response.size());
     }
@@ -320,11 +320,11 @@ void Connection::m_handleReadData(const boost::system::error_code& error)
             )
         );
     } else if (error == error::eof) {
-        if (!m_eofCallback.empty())
+        if (m_eofCallback)
             m_eofCallback();
         m_shutdown();
     } else if (error != error::operation_aborted) {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -339,7 +339,7 @@ void Connection::m_handleReadChunkLength(const boost::system::error_code& error)
         size_t length = 0;
         m_response.consume(parseChunkLength(m_response.data(), length));
         if (length == 0) {
-            if (!m_eofCallback.empty())
+            if (m_eofCallback)
                 m_eofCallback();
             m_shutdown();
         } else {
@@ -360,11 +360,11 @@ void Connection::m_handleReadChunkLength(const boost::system::error_code& error)
             }
         }
     } else if (error == error::eof) {
-        if (!m_eofCallback.empty())
+        if (m_eofCallback)
             m_eofCallback();
         m_shutdown();
     } else if (error != error::operation_aborted) {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -378,10 +378,10 @@ void Connection::m_handleReadChunkData(const boost::system::error_code& error,
 
     if (size > 0) {
         if (size > m_response.size()) {
-            if (!m_dataCallback.empty())
+            if (m_dataCallback)
                 m_dataCallback(m_response.data());
         } else {
-            if (!m_dataCallback.empty())
+            if (m_dataCallback)
                 m_dataCallback(buffer(m_response.data(), size));
         }
     }
@@ -414,11 +414,11 @@ void Connection::m_handleReadChunkData(const boost::system::error_code& error,
             );
         }
     } else if (error == error::eof) {
-        if (!m_eofCallback.empty())
+        if (m_eofCallback)
             m_eofCallback();
         m_shutdown();
     } else if (error != error::operation_aborted) {
-        if (!m_errorCallback.empty())
+        if (m_errorCallback)
             m_errorCallback(error);
         m_shutdown();
     }
@@ -442,7 +442,7 @@ void Connection::m_handleTimeout()
         // deadline before this actor had a chance to run.
         if (m_timeouter.expires_at() <= boost::asio::deadline_timer::traits_type::now()) {
             ERRLOG(logInfo) << "Connection timeout detected, shutting it down" << std::endl;
-            if (!m_errorCallback.empty())
+            if (m_errorCallback)
                 m_errorCallback(
                     boost::system::error_code(
                         connectionTimeout,

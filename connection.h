@@ -42,10 +42,10 @@ class Connection
         void setEOFCallback(const EOFCallback& cb) { m_eofCallback = cb; }
         void setHeadersCallback(const HeadersCallback& cb) { m_headersCallback = cb; }
 
-        void resetErrorCallback() { m_errorCallback.clear(); }
-        void resetDataCallback() { m_dataCallback.clear(); }
-        void resetEOFCallback() { m_eofCallback.clear(); }
-        void resetHeadersCallback() { m_headersCallback.clear(); }
+        void resetErrorCallback() { m_errorCallback = {}; }
+        void resetDataCallback() { m_dataCallback = {}; }
+        void resetEOFCallback() { m_eofCallback = {}; }
+        void resetHeadersCallback() { m_headersCallback = {}; }
 
         const std::map<std::string, std::string>& headers() const { return m_headers; }
 

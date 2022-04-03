@@ -57,7 +57,7 @@ void Relay::m_clearCallbacks()
 
 void Relay::m_handleError(const boost::system::error_code& ec)
 {
-    if (!m_errorCallback.empty())
+    if (m_errorCallback)
         m_errorCallback(ec);
     m_clearCallbacks();
     m_client.stop();
@@ -72,7 +72,7 @@ void Relay::m_handleData(const boost::asio::const_buffers_1& buffers)
 
 void Relay::m_handleEOF()
 {
-    if (!m_eofCallback.empty())
+    if (m_eofCallback)
         m_eofCallback();
     m_clearCallbacks();
     m_client.stop();
