@@ -31,8 +31,6 @@ class Server : public std::enable_shared_from_this<Server>,
         void m_prepareRequest() override;
 };
 
-using ServerPtr = std::shared_ptr<Server>;
-
 }
 
 #endif

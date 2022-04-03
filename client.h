@@ -32,8 +32,6 @@ class Client : public std::enable_shared_from_this<Client>,
         void m_prepareRequest() override;
 };
 
-using ClientPtr = std::shared_ptr<Client>;
-
 }
 
 #endif

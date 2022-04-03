@@ -9,14 +9,13 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 #include <functional>
 #include <cstdint>
 
-using boost::asio::ip::tcp;
-
 namespace Caster {
 
-class Connection
+class Connection : std::enable_shared_from_this<Connection>
 {
     public:
         Connection(boost::asio::io_service& ioService,
@@ -52,6 +51,8 @@ class Connection
         bool isActive() const { return m_active; }
 
     protected:
+        using tcp = boost::asio::ip::tcp;
+
         std::string m_server;
         uint16_t m_port;
         std::string m_uri;
@@ -86,8 +87,10 @@ class Connection
         void m_handleReadChunkLength(const boost::system::error_code& error);
         void m_handleReadChunkData(const boost::system::error_code& error,
                                    size_t size);
-        void m_handleTimeout();
         void m_shutdown();
+
+        void restartTimer();
+        void handleTimeout(const boost::system::error_code& ec);
 };
 
 template <typename ConstBufferSequence>
@@ -103,7 +106,7 @@ void Connection::send(const ConstBufferSequence& buffers)
         boost::asio::transfer_all(),
         std::bind(
             &Connection::m_handleWriteData,
-            this,
+            shared_from_this(),
             std::placeholders::_1
         )
     );
