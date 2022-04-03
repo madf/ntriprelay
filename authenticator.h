@@ -12,8 +12,10 @@ class Authenticator {
         Authenticator(const std::string& login,
                       const std::string& password) noexcept;
 
-        void setLogin(const std::string& login) noexcept;
-        void setPassword(const std::string& password) noexcept;
+        Authenticator(const Authenticator&) = default;
+        Authenticator& operator=(const Authenticator&) = default;
+        Authenticator(Authenticator&&) = default;
+        Authenticator& operator=(Authenticator&&) = default;
 
         std::string basic() const;
         std::string digest(const std::string& method,

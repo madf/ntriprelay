@@ -32,15 +32,3 @@ std::string Authenticator::digest(const std::string& /*method*/,
 {
     throw CasterError("Digest authentication method is not implemented");
 }
-
-void Authenticator::setLogin(const std::string& login) noexcept
-{
-    m_login = login;
-    m_authenticated = true;
-}
-
-void Authenticator::setPassword(const std::string& password) noexcept
-{
-    m_password = password;
-    m_authenticated = true;
-}

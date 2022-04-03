@@ -87,8 +87,7 @@ void Connection::start(unsigned timeout)
 void Connection::setCredentials(const std::string& login,
                                 const std::string& password)
 {
-    m_auth.setLogin(login);
-    m_auth.setPassword(password);
+    m_auth = Authenticator(login, password);
 }
 
 void Connection::m_handleResolve(const boost::system::error_code& error,
