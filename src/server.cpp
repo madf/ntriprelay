@@ -3,10 +3,10 @@
 #include "version.h"
 
 #include <boost/format.hpp>
-#include <boost/array.hpp>
 #include <boost/asio/buffer.hpp>
 
 #include <iostream>
+#include <array>
 
 using Caster::Server;
 
@@ -20,7 +20,7 @@ Server::Server(boost::asio::io_service& ioService,
 void Server::send(const boost::asio::const_buffer& buffer)
 {
     const std::string dataLength((boost::format("%|x|\r\n") % boost::asio::buffer_size(buffer)).str());
-    const boost::array<boost::asio::const_buffer, 3> bufs = {{
+    const std::array<boost::asio::const_buffer, 3> bufs = {{
         boost::asio::buffer(dataLength),
         boost::asio::buffer(buffer),
         boost::asio::buffer("\r\n", 2)
