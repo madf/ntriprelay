@@ -49,25 +49,25 @@ void SettingsParser::init(int argc, char* argv[])
     po::store(po::parse_command_line(argc, argv, m_desc), vm);
     po::notify(vm);
 
-    m_settings.m_isHelp = vm.count("help");
-    m_settings.m_isVersion = vm.count("version");
+    m_settings.m_isHelp = vm.count("help") > 0;
+    m_settings.m_isVersion = vm.count("version") > 0;
 
-    if (vm.count("debug"))
+    if (vm.count("debug") > 0)
         m_settings.m_isDebug = true;
 
-    if (vm.count("src-server"))
+    if (vm.count("src-server") > 0)
         m_settings.m_sourceServer = vm["src-server"].as<std::string>();
 
-    if (vm.count("src-mountpoint"))
+    if (vm.count("src-mountpoint") > 0)
         m_settings.m_sourceMountpoint = vm["src-mountpoint"].as<std::string>();
 
-    if (vm.count("src-login"))
+    if (vm.count("src-login") > 0)
         m_settings.m_sourceLogin = vm["src-login"].as<std::string>();
 
-    if (vm.count("src-password"))
+    if (vm.count("src-password") > 0)
         m_settings.m_sourcePassword = vm["src-password"].as<std::string>();
 
-    if (vm.count("src-port"))
+    if (vm.count("src-port") > 0)
     {
         try
         {
@@ -79,19 +79,19 @@ void SettingsParser::init(int argc, char* argv[])
         }
     }
 
-    if (vm.count("dst-server"))
+    if (vm.count("dst-server") > 0)
         m_settings.m_destinationServer = vm["dst-server"].as<std::string>();
 
-    if (vm.count("dst-mountpoint"))
+    if (vm.count("dst-mountpoint") > 0)
         m_settings.m_destinationMountpoint = vm["dst-mountpoint"].as<std::string>();
 
-    if (vm.count("dst-login"))
+    if (vm.count("dst-login") > 0)
         m_settings.m_destinationLogin = vm["dst-login"].as<std::string>();
 
-    if (vm.count("dst-password"))
+    if (vm.count("dst-password") > 0)
         m_settings.m_destinationPassword = vm["dst-password"].as<std::string>();
 
-    if (vm.count("dst-port"))
+    if (vm.count("dst-port") > 0)
     {
         try
         {
@@ -103,7 +103,7 @@ void SettingsParser::init(int argc, char* argv[])
         }
     }
 
-    if (vm.count("verbosity"))
+    if (vm.count("verbosity") > 0)
     {
         m_settings.m_verbosity = vm["verbosity"].as<int>();
         if (m_settings.m_verbosity < 1)
@@ -116,10 +116,10 @@ void SettingsParser::init(int argc, char* argv[])
         }
     }
 
-    if (vm.count("timeout"))
+    if (vm.count("timeout") > 0)
         m_settings.m_connectionTimeout = vm["timeout"].as<unsigned>();
 
-    if (vm.count("gga"))
+    if (vm.count("gga") > 0)
         m_settings.m_gga = vm["gga"].as<std::string>();
 }
 

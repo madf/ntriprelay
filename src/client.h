@@ -1,17 +1,14 @@
 #ifndef __CASTER_CLIENT_H__
 #define __CASTER_CLIENT_H__
 
-#include "authenticator.h"
 #include "connection.h"
 
-#include <boost/asio.hpp>
+#include <boost/asio/io_service.hpp>
 
 #include <string>
 #include <cstdint>
 
 namespace Caster {
-
-class NTRIPRequest;
 
 class Client : public Connection {
     public:

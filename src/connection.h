@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <chrono>
 #include <cstdint>
 
 namespace Caster
@@ -60,7 +61,7 @@ class Connection
         unsigned m_timeout;
         std::map<std::string, std::string> m_headers;
         tcp::socket m_socket;
-        boost::asio::deadline_timer m_timeouter;
+        boost::asio::steady_timer m_timeouter;
         boost::asio::streambuf m_request;
 
         virtual void prepareRequest() = 0;
@@ -102,7 +103,7 @@ inline
 void Connection::send(const ConstBufferSequence& buffers)
 {
     if (m_timeout)
-        m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
+        m_timeouter.expires_from_now(std::chrono::seconds(m_timeout));
 
     async_write(
         m_socket,

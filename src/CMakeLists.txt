@@ -21,7 +21,8 @@ portability-*,\
 readability-*,\
 -modernize-avoid-bind,\
 -modernize-use-trailing-return-type,\
--readability-braces-around-statements" )
+-readability-braces-around-statements,\
+-readability-identifier-length" )
     endif ()
 endif ()
 

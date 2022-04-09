@@ -56,7 +56,7 @@ class Relay : public std::enable_shared_from_this<Relay>
 
         void initCallbacks();
         void clearCallbacks();
-        void handleError(const boost::system::error_code& code);
+        void handleError(const boost::system::error_code& ec);
         void handleData(const boost::asio::const_buffers_1& buffers);
         void handleEOF();
 };

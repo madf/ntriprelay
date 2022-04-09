@@ -261,7 +261,7 @@ void Connection::handleReadData(const bs::error_code& error)
 {
     restartTimer();
 
-    if (m_response.size()) {
+    if (m_response.size() > 0) {
         if (m_dataCallback)
             m_dataCallback(m_response.data());
         m_response.consume(m_response.size());
@@ -398,21 +398,20 @@ void Connection::handleTimeout(const bs::error_code& ec)
     // Check whether the deadline has passed. We compare the deadline against
     // the current time since a new asynchronous operation may have moved the
     // deadline before this actor had a chance to run.
-    if (m_timeouter.expires_at() > ba::deadline_timer::traits_type::now())
+    if (m_timeouter.expires_at() > std::chrono::steady_clock::now())
         m_timeouter.async_wait(std::bind(&Connection::handleTimeout, this, pls::_1));
 
     ERRLOG(logInfo) << "Connection timeout detected, shutting it down" << std::endl;
     reportError(connectionTimeout);
     shutdown();
-    return;
 }
 
 void Connection::restartTimer()
 {
-    if (!m_timeout)
+    if (m_timeout > 0)
         return;
 
-    m_timeouter.expires_from_now(boost::posix_time::seconds(m_timeout));
+    m_timeouter.expires_from_now(std::chrono::seconds(m_timeout));
     m_timeouter.async_wait(std::bind(&Connection::handleTimeout, this, pls::_1));
 }
 

@@ -3,7 +3,6 @@
 #include "error.h"
 
 using Caster::Authenticator;
-using Caster::CasterError;
 
 Authenticator::Authenticator() noexcept
     : m_authenticated(false)
