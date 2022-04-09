@@ -8,10 +8,12 @@
 
 namespace po = boost::program_options;
 
-namespace Caster {
+namespace Caster
+{
 
 class SettingsParser;
-class Settings {
+class Settings
+{
     public:
         Settings() noexcept;
 

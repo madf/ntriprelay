@@ -16,38 +16,38 @@ Relay::Relay(boost::asio::io_service& ioService,
 {
 }
 
-void Relay::m_initCallbacks()
+void Relay::initCallbacks()
 {
     m_client.setErrorCallback(
         std::bind(
-            &Relay::m_handleError,
+            &Relay::handleError,
             shared_from_this(),
             pls::_1
         )
     );
     m_client.setDataCallback(
         std::bind(
-            &Relay::m_handleData,
+            &Relay::handleData,
             shared_from_this(),
             pls::_1
         )
     );
     m_client.setEOFCallback(
         std::bind(
-            &Relay::m_handleEOF,
+            &Relay::handleEOF,
             shared_from_this()
         )
     );
     m_server.setErrorCallback(
         std::bind(
-            &Relay::m_handleError,
+            &Relay::handleError,
             shared_from_this(),
             pls::_1
         )
     );
 }
 
-void Relay::m_clearCallbacks()
+void Relay::clearCallbacks()
 {
     m_client.resetErrorCallback();
     m_client.resetDataCallback();
@@ -55,26 +55,26 @@ void Relay::m_clearCallbacks()
     m_server.resetErrorCallback();
 }
 
-void Relay::m_handleError(const boost::system::error_code& ec)
+void Relay::handleError(const boost::system::error_code& ec)
 {
     if (m_errorCallback)
         m_errorCallback(ec);
-    m_clearCallbacks();
+    clearCallbacks();
     m_client.stop();
     m_server.stop();
 }
 
-void Relay::m_handleData(const boost::asio::const_buffers_1& buffers)
+void Relay::handleData(const boost::asio::const_buffers_1& buffers)
 {
     if (m_server.isActive())
         m_server.send(buffers);
 }
 
-void Relay::m_handleEOF()
+void Relay::handleEOF()
 {
     if (m_eofCallback)
         m_eofCallback();
-    m_clearCallbacks();
+    clearCallbacks();
     m_client.stop();
     m_server.stop();
 }

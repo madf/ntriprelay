@@ -12,7 +12,8 @@
 #include <functional>
 #include <cstdint>
 
-namespace Caster {
+namespace Caster
+{
 
 class Connection
 {
@@ -27,7 +28,7 @@ class Connection
 
         void start();
         void start(unsigned timeout);
-        void stop() { m_shutdown(); }
+        void stop() { shutdown(); }
 
         template <typename ConstBufferSequence>
         void send(const ConstBufferSequence& buffers);
@@ -62,7 +63,7 @@ class Connection
         boost::asio::deadline_timer m_timeouter;
         boost::asio::streambuf m_request;
 
-        virtual void m_prepareRequest() = 0;
+        virtual void prepareRequest() = 0;
 
     private:
         tcp::resolver m_resolver;
@@ -74,19 +75,20 @@ class Connection
         bool m_chunked;
         bool m_active;
 
-        void m_handleResolve(const boost::system::error_code& error,
-                             tcp::resolver::iterator it);
-        void m_handleConnect(const boost::system::error_code& error,
-                             tcp::resolver::iterator it);
-        void m_handleWriteRequest(const boost::system::error_code& error);
-        void m_handleWriteData(const boost::system::error_code& error);
-        void m_handleReadStatus(const boost::system::error_code& error);
-        void m_handleReadHeaders(const boost::system::error_code& error);
-        void m_handleReadData(const boost::system::error_code& error);
-        void m_handleReadChunkLength(const boost::system::error_code& error);
-        void m_handleReadChunkData(const boost::system::error_code& error,
-                                   size_t size);
-        void m_shutdown();
+        void handleResolve(const boost::system::error_code& error,
+                           tcp::resolver::iterator it);
+        void handleConnect(const boost::system::error_code& error,
+                           tcp::resolver::iterator it);
+        void handleWriteRequest(const boost::system::error_code& error);
+        void handleWriteData(const boost::system::error_code& error);
+        void handleReadStatus(const boost::system::error_code& error);
+        void handleReadHeaders(const boost::system::error_code& error);
+        void handleReadData(const boost::system::error_code& error);
+        void handleReadChunkLength(const boost::system::error_code& error);
+        void handleReadChunkData(const boost::system::error_code& error,
+                                 size_t size);
+
+        void shutdown();
 
         void restartTimer();
         void handleTimeout(const boost::system::error_code& ec);
@@ -106,11 +108,7 @@ void Connection::send(const ConstBufferSequence& buffers)
         m_socket,
         buffers,
         boost::asio::transfer_all(),
-        std::bind(
-            &Connection::m_handleWriteData,
-            this,
-            std::placeholders::_1
-        )
+        std::bind(&Connection::handleWriteData, this, std::placeholders::_1)
     );
 }
 

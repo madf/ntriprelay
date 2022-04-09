@@ -20,7 +20,7 @@ Client::Client(io_service& ioService,
 {
 }
 
-void Client::m_prepareRequest()
+void Client::prepareRequest()
 {
     std::ostream requestStream(&m_request);
     requestStream << "GET " << m_uri << " HTTP/1.1\r\n"

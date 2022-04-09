@@ -28,7 +28,7 @@ void Server::send(const boost::asio::const_buffer& buffer)
     Connection::send(bufs);
 }
 
-void Server::m_prepareRequest()
+void Server::prepareRequest()
 {
     std::ostream requestStream(&m_request);
     requestStream << "POST " << m_uri << " HTTP/1.1\r\n"

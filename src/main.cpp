@@ -26,42 +26,50 @@ int main(int argc, char* argv[])
 {
     SettingsParser sParser;
 
-    try {
+    try
+    {
         sParser.init(argc, argv);
     }
-    catch (const CasterError& e) {
+    catch (const CasterError& e)
+    {
         std::cerr << e.what() << std::endl;
         return -1;
     }
-    catch (const std::exception& e) {
+    catch (const std::exception& e)
+    {
         std::cerr << "Fatal error!" << std::endl;
         std::cerr << e.what() << std::endl;
         return -1;
     }
 
-    if (sParser.settings().isHelp()) {
+    if (sParser.settings().isHelp())
+    {
         sParser.printHelp();
         return 0;
     }
 
-    if (sParser.settings().isVersion()) {
+    if (sParser.settings().isVersion())
+    {
         std::cout << "Boost NTRIP Relay " << version << std::endl;
         return 0;
     }
 
-    if (sParser.settings().sourceServer().empty()) {
+    if (sParser.settings().sourceServer().empty())
+    {
         std::cerr << "You must specify source server location" << std::endl;
         return -1;
     }
 
-    if (sParser.settings().destinationServer().empty()) {
+    if (sParser.settings().destinationServer().empty())
+    {
         std::cerr << "You must specify source server location" << std::endl;
         return -1;
     }
 
     configureLogger(sParser);
 
-    if (sParser.settings().isDebug()) {
+    if (sParser.settings().isDebug())
+    {
         std::cout << "Settings dump:\n"
                   << "\t- connection timeout: " << sParser.settings().connectionTimeout() << "\n"
                   << "\t- debug: " << (sParser.settings().isDebug() ? "yes" : "no") << "\n"
@@ -81,7 +89,8 @@ int main(int argc, char* argv[])
                   << "\t- version: " << (sParser.settings().isVersion() ? "yes" : "no") << std::endl;
     }
 
-    try {
+    try
+    {
         boost::asio::io_service ioService;
         RelayPtr relay;
 
@@ -94,17 +103,23 @@ int main(int argc, char* argv[])
                               sParser.settings().destinationMountpoint()));
 
         relay->setErrorCallback(printError);
+
         relay->setHeadersCallback(std::bind(printHeaders, relay));
+
         if (!sParser.settings().sourceLogin().empty() ||
-            !sParser.settings().sourcePassword().empty()) {
+            !sParser.settings().sourcePassword().empty())
+        {
             relay->setSrcCredentials(sParser.settings().sourceLogin(),
-                                        sParser.settings().sourcePassword());
+                                     sParser.settings().sourcePassword());
         }
+
         if (!sParser.settings().destinationLogin().empty() ||
-            !sParser.settings().destinationPassword().empty()) {
+            !sParser.settings().destinationPassword().empty())
+        {
             relay->setDstCredentials(sParser.settings().destinationLogin(),
-                                             sParser.settings().destinationPassword());
+                                     sParser.settings().destinationPassword());
         }
+
         if (!sParser.settings().gga().empty())
             relay->setGGA(sParser.settings().gga());
 
@@ -118,10 +133,12 @@ int main(int argc, char* argv[])
 
         ERRLOG(logDebug) << "Stopping...";
     }
-    catch (const CasterError& e) {
+    catch (const CasterError& e)
+    {
         ERRLOG(logError) << "Relay error: " << e.what();
     }
-    catch (const std::exception& e) {
+    catch (const std::exception& e)
+    {
         ERRLOG(logFatal) << "System error: " << e.what();
         return -1;
     }
@@ -131,8 +148,10 @@ int main(int argc, char* argv[])
 
 void configureLogger(const SettingsParser& parser)
 {
-    if (parser.settings().isDebug()) {
-        switch (parser.settings().verbosity()) {
+    if (parser.settings().isDebug())
+    {
+        switch (parser.settings().verbosity())
+        {
             case 0:
                 Logger<CerrWriter>::setLogLevel(logInfo);
                 break;
@@ -143,8 +162,11 @@ void configureLogger(const SettingsParser& parser)
                 Logger<CerrWriter>::setLogLevel(logAll);
                 break;
         };
-    } else {
-        switch (parser.settings().verbosity()) {
+    }
+    else
+    {
+        switch (parser.settings().verbosity())
+        {
             case 0:
                 Logger<CerrWriter>::setLogLevel(logFatal);
                 break;

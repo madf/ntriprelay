@@ -27,7 +27,7 @@ class Client : public Connection {
     private:
         std::string m_gga;
 
-        void m_prepareRequest() override;
+        void prepareRequest() override;
 };
 
 }

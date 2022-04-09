@@ -26,7 +26,7 @@ class Server : private Connection {
         void send(const boost::asio::const_buffer& buffer);
 
     private:
-        void m_prepareRequest() override;
+        void prepareRequest() override;
 };
 
 }

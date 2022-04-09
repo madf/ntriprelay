@@ -25,11 +25,11 @@ class Relay : public std::enable_shared_from_this<Relay>
               const std::string& dstMountpoint);
 
         void start()
-        { m_initCallbacks(); m_client.start(); m_server.start(); }
+        { initCallbacks(); m_client.start(); m_server.start(); }
 
         void start(unsigned timeout)
         {
-            m_initCallbacks();
+            initCallbacks();
             m_client.start(timeout);
             m_server.start(timeout);
         }
@@ -54,11 +54,11 @@ class Relay : public std::enable_shared_from_this<Relay>
         ErrorCallback m_errorCallback;
         EOFCallback m_eofCallback;
 
-        void m_initCallbacks();
-        void m_clearCallbacks();
-        void m_handleError(const boost::system::error_code& code);
-        void m_handleData(const boost::asio::const_buffers_1& buffers);
-        void m_handleEOF();
+        void initCallbacks();
+        void clearCallbacks();
+        void handleError(const boost::system::error_code& code);
+        void handleData(const boost::asio::const_buffers_1& buffers);
+        void handleEOF();
 };
 
 using RelayPtr = std::shared_ptr<Relay>;

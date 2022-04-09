@@ -30,7 +30,7 @@ class Logger {
         LogLevel m_messageLevel;
         static LogLevel m_logLevel;
 
-        void m_logTime();
+        void logTime();
 };
 
 template <>
@@ -45,12 +45,12 @@ inline
 Logger<Writer>::Logger(LogLevel level)
     : m_messageLevel(level)
 {
-    m_logTime();
+    logTime();
 }
 
 template <class Writer>
 inline
-void Logger<Writer>::m_logTime()
+void Logger<Writer>::logTime()
 {
     const time_t now(time(NULL));
     struct tm brokenTime;
