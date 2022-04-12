@@ -92,15 +92,13 @@ int main(int argc, char* argv[])
     try
     {
         boost::asio::io_service ioService;
-        RelayPtr relay;
-
-        relay.reset(new Relay(ioService,
-                              sParser.settings().sourceServer(),
-                              sParser.settings().sourcePort(),
-                              sParser.settings().sourceMountpoint(),
-                              sParser.settings().destinationServer(),
-                              sParser.settings().destinationPort(),
-                              sParser.settings().destinationMountpoint()));
+        auto relay = std::make_shared<Relay>(ioService,
+                                             sParser.settings().sourceServer(),
+                                             sParser.settings().sourcePort(),
+                                             sParser.settings().sourceMountpoint(),
+                                             sParser.settings().destinationServer(),
+                                             sParser.settings().destinationPort(),
+                                             sParser.settings().destinationMountpoint());
 
         relay->setErrorCallback(printError);
 

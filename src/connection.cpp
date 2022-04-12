@@ -91,7 +91,7 @@ void Connection::setCredentials(const std::string& login,
 }
 
 void Connection::handleResolve(const bs::error_code& error,
-                                 tcp::resolver::iterator it)
+                               tcp::resolver::iterator it)
 {
     if (error)
     {
@@ -107,7 +107,12 @@ void Connection::handleResolve(const bs::error_code& error,
         return;
     }
 
+    ERRLOG(logDebug) << "Endpoints to connect:";
+    for (auto i = it; i != tcp::resolver::iterator(); ++i)
+        ERRLOG(logDebug) << i->endpoint();
+
     restartTimer();
+    ERRLOG(logDebug) << "Trying to connect to " << it->endpoint();
     m_socket.async_connect(*it, std::bind(&Connection::handleConnect, this, pls::_1, it));
 }
 
@@ -116,7 +121,9 @@ void Connection::handleConnect(const bs::error_code& error,
 {
     if (error)
     {
+        ERRLOG(logDebug) << "Error connecting to " << it->endpoint() << ": " << error.message();
         ++it;
+        ERRLOG(logDebug) << "Trying to connect to " << it->endpoint();
         if (it == tcp::resolver::iterator())
         {
             reportError(error);
@@ -124,9 +131,12 @@ void Connection::handleConnect(const bs::error_code& error,
             return;
         }
         restartTimer();
+        m_socket.close();
         m_socket.async_connect(*it, std::bind(&Connection::handleConnect, this, pls::_1, it));
         return;
     }
+
+    ERRLOG(logDebug) << "Successfully connected to " << m_socket.remote_endpoint();
 
     restartTimer();
     prepareRequest();
@@ -383,6 +393,7 @@ void Connection::shutdown()
     m_active = false;
     if (!m_socket.is_open())
         return;
+    ERRLOG(logDebug) << "Connection::shutdown()";
     bs::error_code ec;
     m_socket.shutdown(tcp::socket::shutdown_both, ec);
     m_socket.close(ec);
