@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
     if (sParser.settings().destinationServer().empty())
     {
-        std::cerr << "You must specify source server location" << std::endl;
+        std::cerr << "You must specify destination server location" << std::endl;
         return -1;
     }
 
