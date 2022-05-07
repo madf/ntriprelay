@@ -15,7 +15,6 @@ enum {
 };
 
 struct Error : std::runtime_error {
-    explicit Error(const std::string& msg) noexcept : runtime_error("Caster: " + msg) {}
     explicit Error(const std::string& subsystem, const std::string& msg) noexcept : runtime_error("Caster::" + subsystem + ": " + msg) {}
 };
 
