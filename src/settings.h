@@ -26,6 +26,7 @@ class Settings
         bool isHelp() const noexcept { return m_isHelp; }
         bool isVersion() const noexcept { return m_isVersion; }
         bool isDebug() const noexcept { return m_isDebug; }
+        bool isDaemon() const noexcept { return m_isDaemon; }
 
         const std::string& sourceServer() const noexcept { return m_sourceServer; }
         const std::string& sourceMountpoint() const noexcept { return m_sourceMountpoint; }
@@ -39,6 +40,8 @@ class Settings
 
         const std::string& gga() const noexcept { return m_gga; }
 
+        const std::string& PIDFile() const noexcept { return m_PIDFile; }
+
         int verbosity() const noexcept { return m_verbosity; }
         uint16_t destinationPort() const noexcept { return m_destinationPort; }
         uint16_t sourcePort() const noexcept { return m_sourcePort; }
@@ -48,6 +51,7 @@ class Settings
         bool m_isHelp;
         bool m_isVersion;
         bool m_isDebug;
+        bool m_isDaemon;
 
         std::string m_sourceServer;
         std::string m_sourceMountpoint;
@@ -60,6 +64,7 @@ class Settings
         std::string m_destinationPassword;
         uint16_t m_destinationPort;
         std::string m_gga;
+        std::string m_PIDFile;
 
         int m_verbosity;
         unsigned m_connectionTimeout;

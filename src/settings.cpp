@@ -13,8 +13,10 @@ Settings::Settings() noexcept
     : m_isHelp(true),
       m_isVersion(false),
       m_isDebug(false),
+      m_isDaemon(false),
       m_sourcePort(2101),
       m_destinationPort(2101),
+      m_PIDFile("/var/run/ntriprelay.pid"),
       m_verbosity(1),
       m_connectionTimeout(120)
 {
@@ -26,6 +28,8 @@ SettingsParser::SettingsParser() noexcept
     m_desc.add_options()
         ("help,h", "produce this help message")
         ("debug,d", "NTRIP clinet debugging")
+        ("daemon,D", "run in background")
+        ("pid-file", po::value<std::string>(), "PID file location")
         ("gga,g", po::value<std::string>(), "GPGGA string")
         ("src-mountpoint,M", po::value<std::string>(), "source mountpoint name")
         ("src-login,L", po::value<std::string>(), "source login")
@@ -54,6 +58,9 @@ void SettingsParser::init(int argc, char* argv[])
 
     if (vm.count("debug") > 0)
         m_settings.m_isDebug = true;
+
+    if (vm.count("daemon") > 0)
+        m_settings.m_isDaemon = true;
 
     if (vm.count("src-server") > 0)
         m_settings.m_sourceServer = vm["src-server"].as<std::string>();
@@ -121,6 +128,9 @@ void SettingsParser::init(int argc, char* argv[])
 
     if (vm.count("gga") > 0)
         m_settings.m_gga = vm["gga"].as<std::string>();
+
+    if (vm.count("pid-file") > 0)
+        m_settings.m_PIDFile = vm["pid-file"].as<std::string>();
 }
 
 void SettingsParser::printHelp() const noexcept
