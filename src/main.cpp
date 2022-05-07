@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     {
         sParser.init(argc, argv);
     }
-    catch (const CasterError& e)
+    catch (const Error& e)
     {
         std::cerr << e.what() << std::endl;
         return -1;
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
 
         ERRLOG(logDebug) << "Stopping...";
     }
-    catch (const CasterError& e)
+    catch (const Error& e)
     {
         ERRLOG(logError) << "Relay error: " << e.what();
     }

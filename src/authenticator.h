@@ -1,13 +1,21 @@
-#ifndef __CASTER_AUTHENTICATOR_H__
-#define __CASTER_AUTHENTICATOR_H__
+#pragma once
+
+#include "error.h"
 
 #include <string>
 #include <cstdint>
 
-namespace Caster {
+namespace Caster
+{
 
-class Authenticator {
+class Authenticator
+{
     public:
+        struct Error : Caster::Error
+        {
+            explicit Error(const std::string& message) noexcept : Caster::Error("Authenticator", message) {}
+        };
+
         Authenticator() noexcept;
         Authenticator(const std::string& login,
                       const std::string& password) noexcept;
@@ -33,5 +41,3 @@ class Authenticator {
 };
 
 }
-
-#endif

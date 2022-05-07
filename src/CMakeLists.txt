@@ -1,6 +1,6 @@
 configure_file ( version.h.in version.h ESCAPE_QUOTES @ONLY )
 
-file ( GLOB CPP_FILES main.cpp relay.cpp server.cpp client.cpp connection.cpp settings.cpp logger.cpp log_writer.cpp base64.cpp authenticator.cpp )
+file ( GLOB CPP_FILES main.cpp relay.cpp server.cpp client.cpp connection.cpp settings.cpp logger.cpp log_writer.cpp base64.cpp authenticator.cpp pidfile.cpp )
 
 set ( THREADS_PREFER_PTHREAD_FLAG ON )
 find_package ( Threads REQUIRED )

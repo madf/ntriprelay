@@ -1,6 +1,5 @@
 #include "authenticator.h"
 #include "base64.h"
-#include "error.h"
 
 using Caster::Authenticator;
 
@@ -29,5 +28,5 @@ std::string Authenticator::digest(const std::string& /*method*/,
                                   uint8_t /*qop*/,
                                   const std::string& /*nonce*/) const
 {
-    throw CasterError("Digest authentication method is not implemented");
+    throw Error("Digest authentication method is not implemented.");
 }

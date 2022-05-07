@@ -1,5 +1,4 @@
-#ifndef __CASTER_CONNECTION_H__
-#define __CASTER_CONNECTION_H__
+#pragma once
 
 #include "authenticator.h"
 #include "callbacks.h"
@@ -114,5 +113,3 @@ void Connection::send(const ConstBufferSequence& buffers)
 }
 
 }
-
-#endif

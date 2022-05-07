@@ -1,5 +1,4 @@
-#ifndef __CASTER_ERROR_H__
-#define __CASTER_ERROR_H__
+#pragma once
 
 #include <boost/system/error_code.hpp>
 
@@ -15,11 +14,12 @@ enum {
     invalidChunkLength
 };
 
-struct CasterError : std::runtime_error {
-    explicit CasterError(const std::string& msg) noexcept : std::runtime_error(msg) {}
+struct Error : std::runtime_error {
+    explicit Error(const std::string& msg) noexcept : runtime_error("Caster: " + msg) {}
+    explicit Error(const std::string& subsystem, const std::string& msg) noexcept : runtime_error("Caster::" + subsystem + ": " + msg) {}
 };
 
-class CasterCategory : public boost::system::error_category
+class Category : public boost::system::error_category
 {
     public:
         const char* name() const BOOST_SYSTEM_NOEXCEPT { return "Caster"; }
@@ -41,13 +41,11 @@ class CasterCategory : public boost::system::error_category
             };
         }
 
-        static CasterCategory& getInstance()
+        static Category& getInstance()
         {
-            static CasterCategory category;
+            static Category category;
             return category;
         }
 };
 
 }
-
-#endif

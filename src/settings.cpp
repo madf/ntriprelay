@@ -75,7 +75,7 @@ void SettingsParser::init(int argc, char* argv[])
         }
         catch (boost::bad_lexical_cast &)
         {
-            throw CasterError("Invalid source port value");
+            throw Error("Invalid source port value.");
         }
     }
 
@@ -99,7 +99,7 @@ void SettingsParser::init(int argc, char* argv[])
         }
         catch (boost::bad_lexical_cast &)
         {
-            throw CasterError("Invalid destination port value");
+            throw Error("Invalid destination port value.");
         }
     }
 

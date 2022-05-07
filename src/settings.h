@@ -1,5 +1,6 @@
-#ifndef __CASTER_SETTINGS_H__
-#define __CASTER_SETTINGS_H__
+#pragma once
+
+#include "error.h"
 
 #include <boost/program_options.hpp>
 
@@ -15,6 +16,11 @@ class SettingsParser;
 class Settings
 {
     public:
+        struct Error : Caster::Error
+        {
+            explicit Error(const std::string& message) noexcept : Caster::Error("Settings", message) {}
+        };
+
         Settings() noexcept;
 
         bool isHelp() const noexcept { return m_isHelp; }
@@ -76,5 +82,3 @@ class SettingsParser
 };
 
 }
-
-#endif

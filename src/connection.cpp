@@ -434,5 +434,5 @@ void Connection::reportError(const bs::error_code& ec)
 
 void Connection::reportError(int val)
 {
-    reportError(boost::system::error_code(val, CasterCategory::getInstance()));
+    reportError(boost::system::error_code(val, Category::getInstance()));
 }
