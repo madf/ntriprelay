@@ -5,8 +5,10 @@
 using Caster::Relay;
 
 namespace pls = std::placeholders;
+namespace bs = boost::system;
+namespace ba = boost::asio;
 
-Relay::Relay(boost::asio::io_service& ioService,
+Relay::Relay(ba::io_service& ioService,
              const std::string& srcServer, uint16_t srcPort,
              const std::string& srcMountpoint,
              const std::string& dstServer, uint16_t dstPort,
@@ -20,7 +22,7 @@ void Relay::initCallbacks()
 {
     m_client.setErrorCallback(
         std::bind(
-            &Relay::handleError,
+            &Relay::handleClientError,
             shared_from_this(),
             pls::_1
         )
@@ -40,7 +42,7 @@ void Relay::initCallbacks()
     );
     m_server.setErrorCallback(
         std::bind(
-            &Relay::handleError,
+            &Relay::handleServerError,
             shared_from_this(),
             pls::_1
         )
@@ -55,16 +57,26 @@ void Relay::clearCallbacks()
     m_server.resetErrorCallback();
 }
 
-void Relay::handleError(const boost::system::error_code& ec)
+void Relay::handleClientError(const bs::error_code& ec)
+{
+    handleError("Source connection error: " + ec.message());
+}
+
+void Relay::handleServerError(const bs::error_code& ec)
+{
+    handleError("Destination connection error: " + ec.message());
+}
+
+void Relay::handleError(const std::string& message)
 {
     if (m_errorCallback)
-        m_errorCallback(ec);
+        m_errorCallback(message);
     clearCallbacks();
     m_client.stop();
     m_server.stop();
 }
 
-void Relay::handleData(const boost::asio::const_buffers_1& buffers)
+void Relay::handleData(const ba::const_buffers_1& buffers)
 {
     if (m_server.isActive())
         m_server.send(buffers);

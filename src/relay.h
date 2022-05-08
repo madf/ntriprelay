@@ -18,6 +18,8 @@ namespace Caster {
 class Relay : public std::enable_shared_from_this<Relay>
 {
     public:
+        using ErrorCallback = std::function<void (const std::string&)>;
+
         Relay(boost::asio::io_service& ioService,
               const std::string& srcServer, uint16_t srcPort,
               const std::string& srcMountpoint,
@@ -56,7 +58,9 @@ class Relay : public std::enable_shared_from_this<Relay>
 
         void initCallbacks();
         void clearCallbacks();
-        void handleError(const boost::system::error_code& ec);
+        void handleClientError(const boost::system::error_code& ec);
+        void handleServerError(const boost::system::error_code& ec);
+        void handleError(const std::string& message);
         void handleData(const boost::asio::const_buffers_1& buffers);
         void handleEOF();
 };

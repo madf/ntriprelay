@@ -55,9 +55,9 @@ void configureLogger(const Settings& settings)
     }
 }
 
-void printError(const boost::system::error_code& code)
+void printError(const std::string& message)
 {
-    ERRLOG(logError) << "Relay error: " << code.message();
+    ERRLOG(logError) << message;
 }
 
 void printHeaders(const RelayPtr& relayPtr)
