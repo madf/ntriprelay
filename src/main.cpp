@@ -18,7 +18,7 @@
 using namespace MADF;
 using namespace Caster;
 
-void configureLogger(const SettingsParser& parser);
+void configureLogger(const Settings& settings);
 void printError(const boost::system::error_code& code);
 void printHeaders(const RelayPtr& relayPtr);
 
@@ -42,88 +42,90 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    if (sParser.settings().isHelp())
+    const auto& settings = sParser.settings();
+
+    if (settings.isHelp())
     {
         sParser.printHelp();
         return 0;
     }
 
-    if (sParser.settings().isVersion())
+    if (settings.isVersion())
     {
         std::cout << "Boost NTRIP Relay " << version << std::endl;
         return 0;
     }
 
-    if (sParser.settings().sourceServer().empty())
+    if (settings.sourceServer().empty())
     {
         std::cerr << "You must specify source server location" << std::endl;
         return -1;
     }
 
-    if (sParser.settings().destinationServer().empty())
+    if (settings.destinationServer().empty())
     {
         std::cerr << "You must specify destination server location" << std::endl;
         return -1;
     }
 
-    configureLogger(sParser);
+    configureLogger(settings);
 
-    if (sParser.settings().isDebug())
+    if (settings.isDebug())
     {
         std::cout << "Settings dump:\n"
-                  << "\t- connection timeout: " << sParser.settings().connectionTimeout() << "\n"
-                  << "\t- debug: " << (sParser.settings().isDebug() ? "yes" : "no") << "\n"
-                  << "\t- destination login: " << sParser.settings().destinationLogin() << "\n"
-                  << "\t- destination mountpoint: " << sParser.settings().destinationMountpoint() << "\n"
-                  << "\t- destination password: " << sParser.settings().destinationPassword() << "\n"
-                  << "\t- destination port: " << sParser.settings().destinationPort() << "\n"
-                  << "\t- destination server: " << sParser.settings().destinationServer() << "\n"
-                  << "\t- GGA: " << sParser.settings().gga() << "\n"
-                  << "\t- help: " << (sParser.settings().isHelp() ? "yes" : "no") << "\n"
-                  << "\t- source login: " << sParser.settings().sourceLogin() << "\n"
-                  << "\t- source mountpoint: " << sParser.settings().sourceMountpoint() << "\n"
-                  << "\t- source password: " << sParser.settings().sourcePassword() << "\n"
-                  << "\t- source port: " << sParser.settings().sourcePort() << "\n"
-                  << "\t- source server: " << sParser.settings().sourceServer() << "\n"
-                  << "\t- verbosity level: " << sParser.settings().verbosity() << "\n"
-                  << "\t- version: " << (sParser.settings().isVersion() ? "yes" : "no") << std::endl;
+                  << "\t- connection timeout: " << settings.connectionTimeout() << "\n"
+                  << "\t- debug: " << (settings.isDebug() ? "yes" : "no") << "\n"
+                  << "\t- destination login: " << settings.destinationLogin() << "\n"
+                  << "\t- destination mountpoint: " << settings.destinationMountpoint() << "\n"
+                  << "\t- destination password: " << settings.destinationPassword() << "\n"
+                  << "\t- destination port: " << settings.destinationPort() << "\n"
+                  << "\t- destination server: " << settings.destinationServer() << "\n"
+                  << "\t- GGA: " << settings.gga() << "\n"
+                  << "\t- help: " << (settings.isHelp() ? "yes" : "no") << "\n"
+                  << "\t- source login: " << settings.sourceLogin() << "\n"
+                  << "\t- source mountpoint: " << settings.sourceMountpoint() << "\n"
+                  << "\t- source password: " << settings.sourcePassword() << "\n"
+                  << "\t- source port: " << settings.sourcePort() << "\n"
+                  << "\t- source server: " << settings.sourceServer() << "\n"
+                  << "\t- verbosity level: " << settings.verbosity() << "\n"
+                  << "\t- version: " << (settings.isVersion() ? "yes" : "no") << std::endl;
     }
 
     try
     {
         boost::asio::io_service ioService;
         auto relay = std::make_shared<Relay>(ioService,
-                                             sParser.settings().sourceServer(),
-                                             sParser.settings().sourcePort(),
-                                             sParser.settings().sourceMountpoint(),
-                                             sParser.settings().destinationServer(),
-                                             sParser.settings().destinationPort(),
-                                             sParser.settings().destinationMountpoint());
+                                             settings.sourceServer(),
+                                             settings.sourcePort(),
+                                             settings.sourceMountpoint(),
+                                             settings.destinationServer(),
+                                             settings.destinationPort(),
+                                             settings.destinationMountpoint());
 
         relay->setErrorCallback(printError);
 
         relay->setHeadersCallback(std::bind(printHeaders, relay));
 
-        if (!sParser.settings().sourceLogin().empty() ||
-            !sParser.settings().sourcePassword().empty())
+        if (!settings.sourceLogin().empty() ||
+            !settings.sourcePassword().empty())
         {
-            relay->setSrcCredentials(sParser.settings().sourceLogin(),
-                                     sParser.settings().sourcePassword());
+            relay->setSrcCredentials(settings.sourceLogin(),
+                                     settings.sourcePassword());
         }
 
-        if (!sParser.settings().destinationLogin().empty() ||
-            !sParser.settings().destinationPassword().empty())
+        if (!settings.destinationLogin().empty() ||
+            !settings.destinationPassword().empty())
         {
-            relay->setDstCredentials(sParser.settings().destinationLogin(),
-                                     sParser.settings().destinationPassword());
+            relay->setDstCredentials(settings.destinationLogin(),
+                                     settings.destinationPassword());
         }
 
-        if (!sParser.settings().gga().empty())
-            relay->setGGA(sParser.settings().gga());
+        if (!settings.gga().empty())
+            relay->setGGA(settings.gga());
 
         ERRLOG(logDebug) << "Before starting...";
 
-        relay->start(sParser.settings().connectionTimeout());
+        relay->start(settings.connectionTimeout());
 
         ERRLOG(logDebug) << "Starting...";
 
@@ -144,11 +146,11 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-void configureLogger(const SettingsParser& parser)
+void configureLogger(const Settings& settings)
 {
-    if (parser.settings().isDebug())
+    if (settings.isDebug())
     {
-        switch (parser.settings().verbosity())
+        switch (settings.verbosity())
         {
             case 0:
                 Logger<CerrWriter>::setLogLevel(logInfo);
@@ -163,7 +165,7 @@ void configureLogger(const SettingsParser& parser)
     }
     else
     {
-        switch (parser.settings().verbosity())
+        switch (settings.verbosity())
         {
             case 0:
                 Logger<CerrWriter>::setLogLevel(logFatal);
