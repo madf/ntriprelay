@@ -3,8 +3,7 @@
 #include "settings.h"
 #include "version.h"
 #include "error.h"
-
-#include <boost/system/error_code.hpp>
+#include "pidfile.h"
 
 #include <iostream>
 #include <functional> // std::bind
@@ -121,6 +120,8 @@ int main(int argc, char* argv[])
         std::cout << "Settings dump:\n"
                   << "\t- connection timeout: " << settings.connectionTimeout() << "\n"
                   << "\t- debug: " << (settings.isDebug() ? "yes" : "no") << "\n"
+                  << "\t- daemon: " << (settings.isDaemon() ? "yes" : "no") << "\n"
+                  << "\t- PID file: " << settings.PIDFile() << "\n"
                   << "\t- destination login: " << settings.destinationLogin() << "\n"
                   << "\t- destination mountpoint: " << settings.destinationMountpoint() << "\n"
                   << "\t- destination password: " << settings.destinationPassword() << "\n"
@@ -139,6 +140,15 @@ int main(int argc, char* argv[])
 
     try
     {
+        if (settings.isDaemon()) {
+            if (daemon(0, 0)) {
+                ERRLOG(logError) << "Failed to daemonize: " << strerror(errno);
+                return -1;
+            }
+        }
+
+        PIDFile pf(settings.PIDFile());
+
         boost::asio::io_service ioService;
         auto relay = std::make_shared<Relay>(ioService,
                                              settings.sourceServer(),
