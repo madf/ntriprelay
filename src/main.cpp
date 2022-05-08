@@ -18,9 +18,55 @@
 using namespace MADF;
 using namespace Caster;
 
-void configureLogger(const Settings& settings);
-void printError(const boost::system::error_code& code);
-void printHeaders(const RelayPtr& relayPtr);
+namespace
+{
+
+void configureLogger(const Settings& settings)
+{
+    if (settings.isDebug())
+    {
+        switch (settings.verbosity())
+        {
+            case 0:
+                Logger<CerrWriter>::setLogLevel(logInfo);
+                break;
+            case 1:
+                Logger<CerrWriter>::setLogLevel(logDebug);
+                break;
+            case 2:
+                Logger<CerrWriter>::setLogLevel(logAll);
+                break;
+        };
+    }
+    else
+    {
+        switch (settings.verbosity())
+        {
+            case 0:
+                Logger<CerrWriter>::setLogLevel(logFatal);
+                break;
+            case 1:
+                Logger<CerrWriter>::setLogLevel(logError);
+                break;
+            case 2:
+                Logger<CerrWriter>::setLogLevel(logInfo);
+                break;
+        };
+    }
+}
+
+void printError(const boost::system::error_code& code)
+{
+    ERRLOG(logError) << "Relay error: " << code.message();
+}
+
+void printHeaders(const RelayPtr& relayPtr)
+{
+    for (const auto& kv : relayPtr->headers())
+        ERRLOG(logInfo) << kv.first << ": " << kv.second;
+}
+
+}
 
 int main(int argc, char* argv[])
 {
@@ -144,49 +190,4 @@ int main(int argc, char* argv[])
     }
 
     return 0;
-}
-
-void configureLogger(const Settings& settings)
-{
-    if (settings.isDebug())
-    {
-        switch (settings.verbosity())
-        {
-            case 0:
-                Logger<CerrWriter>::setLogLevel(logInfo);
-                break;
-            case 1:
-                Logger<CerrWriter>::setLogLevel(logDebug);
-                break;
-            case 2:
-                Logger<CerrWriter>::setLogLevel(logAll);
-                break;
-        };
-    }
-    else
-    {
-        switch (settings.verbosity())
-        {
-            case 0:
-                Logger<CerrWriter>::setLogLevel(logFatal);
-                break;
-            case 1:
-                Logger<CerrWriter>::setLogLevel(logError);
-                break;
-            case 2:
-                Logger<CerrWriter>::setLogLevel(logInfo);
-                break;
-        };
-    }
-}
-
-void printError(const boost::system::error_code& code)
-{
-    ERRLOG(logError) << "Relay error: " << code.message();
-}
-
-void printHeaders(const RelayPtr& relayPtr)
-{
-    for (const auto& kv : relayPtr->headers())
-        ERRLOG(logInfo) << kv.first << ": " << kv.second;
 }
